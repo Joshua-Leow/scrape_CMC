@@ -10,6 +10,14 @@ def navigate_to_baseurl(base_url, driver_path):
     try:
         driver.get(base_url)
         print(f"Navigated to: {driver.current_url}")
+        
+        # Optional: Print the title of the page
+        print(f"Page Title: {driver.title}")
+    
+    finally:
+        # Quit the driver to clean up
+        driver.quit()
+
 
 def navigate_to_hyperlink(base_url, hyperlink, driver_path):
     # Use the Service class to specify the ChromeDriver path

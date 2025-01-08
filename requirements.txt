@@ -5,3 +5,7 @@ numpy
 matplotlib
 seaborn
 scikit-learn
+beautifulsoup4==4.12.2
+requests==2.31.0
+selenium==4.11.2
+pytest==7.4.0

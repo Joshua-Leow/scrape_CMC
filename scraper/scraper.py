@@ -1,12 +1,68 @@
 from bs4 import BeautifulSoup
 import requests
+from scraper.pages import *
+import os
 
 def get_hyperlink(url):
     response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
     soup = BeautifulSoup(response.text, "html.parser")
-    
+
     # Select element using CSS selector
-    hypterlink = soup.select_one(
-        "#__next > div.sc-f9c982a5-1.bVsWPX.global-layout-v2 > div > div.cmc-body-wrapper > div > div.sc-936354b2-2.iyOdZW > table > tbody > tr:nth-child(1) > td:nth-child(3) > a"
-    )
-    return hypterlink["href"] if hypterlink else None
+    hyperlink = soup.select_one(FIRST_HYPERLINK)
+
+    return hyperlink["href"] if hyperlink else None
+
+
+def get_hyperlinks(base_url):
+    script_dir = os.path.dirname(__file__)
+    rel_path = "../data/last_hyperlink.txt"
+    abs_file_path = os.path.join(script_dir, rel_path)
+
+    # Read the last hyperlink if the file exists
+    last_hyperlink = None
+    try:
+        with open(abs_file_path, "r") as file:
+            last_hyperlink = file.read().strip()
+            print(f"last hyper link is: {last_hyperlink}")
+    except:
+        print(f"Failed to locate last_hyperlink.txt file in path: [{abs_file_path}]")
+    # Fetch the webpage
+    response = requests.get(base_url)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    # Locate the table
+    table_selector = "table > tbody"
+    table = soup.select_one(table_selector)
+    if not table:
+        raise ValueError("Table not found on the webpage")
+
+    hyperlinks = []
+    first_hyperlink = None
+    max_rows = 10 if last_hyperlink else 2  # Limit rows based on the file existence
+
+    for i in range(1, max_rows + 1):
+        row_selector = f"tr:nth-child({i}) > td:nth-child(3) > a"
+        link_tag = table.select_one(row_selector)
+
+        if not link_tag or "href" not in link_tag.attrs:
+            continue
+
+        hyperlink = link_tag["href"]
+        if i == 1:
+            first_hyperlink = hyperlink  # Remember the first hyperlink
+            print(f"first_hyperlink is: {hyperlink}")
+
+        print(f"Row {i} link is: {hyperlink}")
+        if hyperlink == last_hyperlink:
+            break  # Stop if the hyperlink matches last_hyperlink.txt
+
+        hyperlinks.append(hyperlink)
+
+    # Update the last_hyperlink.txt file with the first hyperlink
+    if first_hyperlink:
+        with open(abs_file_path, "w") as file:
+            file.write(first_hyperlink)
+            print(f"Updated last_hyperlink.txt file with {first_hyperlink}")
+
+    return hyperlinks

@@ -1,11 +1,18 @@
-from scraper.scraper import get_hyperlink
-from scraper.navigator import navigate_to_hyperlink
+from scraper.scraper import *
+from scraper.navigator import *
 from config import BASE_URL, CHROME_DRIVER_PATH
 
 if __name__ == "__main__":
-    hyperlink = get_hyperlink(BASE_URL)
-    if hyperlink:
-        print(f"Found hyperlink: {hyperlink}")
-        navigate_to_hyperlink(BASE_URL, hyperlink, CHROME_DRIVER_PATH)
-    else:
-        print("No hyperlink found!")
+    # Use the Service class to specify the ChromeDriver path
+    service = Service(CHROME_DRIVER_PATH)
+    driver = webdriver.Chrome(service=service)
+    driver.get(BASE_URL)
+    print(f"Navigated to: {driver.current_url} [{driver.title}]")
+
+    hyperlinks = get_hyperlinks(BASE_URL)
+    print(f"list of hyperlinks: {hyperlinks}")
+    driver.quit()
+
+    for link in hyperlinks:
+        print(f"link to navigate is : {BASE_URL[:-4] + link}")
+        navigate_to_hyperlink(BASE_URL, link, CHROME_DRIVER_PATH)

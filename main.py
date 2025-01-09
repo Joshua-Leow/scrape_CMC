@@ -13,7 +13,7 @@ if __name__ == "__main__":
     driver.quit()
 
     rows_to_update=[] # List of lists to store rows to be added to Google Sheet
-    for link in hyperlinks:
+    for link in hyperlinks[::-1]:
         rows_to_update = get_data_from_hyperlink(rows_to_update, BASE_URL, link, CHROME_DRIVER_PATH) # List of lists to store rows to be added to Google Sheet
 
     # Update Google Sheets

@@ -76,7 +76,11 @@ def get_data_from_hyperlink(rows_to_update, base_url, hyperlink, driver_path):
     try:
         driver.get(base_url[:-4] + hyperlink)
         print(f"  Navigated to: {driver.current_url}\n    Page Title: {driver.title}")
-        rows_to_update.append([driver.current_url, driver.title])
+        info=[
+            driver.current_url,
+            driver.title
+        ]
+        rows_to_update.append(info)
     finally:
         driver.quit()
 

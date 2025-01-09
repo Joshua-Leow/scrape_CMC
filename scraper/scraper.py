@@ -53,10 +53,10 @@ def get_hyperlinks(base_url):
             first_hyperlink = hyperlink  # Remember the first hyperlink
             print(f"first_hyperlink is: {hyperlink}")
 
-        print(f"Row {i} link is: {hyperlink}")
         if hyperlink == last_hyperlink:
             break  # Stop if the hyperlink matches last_hyperlink.txt
 
+        print(f"Row {i} link is: {hyperlink}")
         hyperlinks.append(hyperlink)
 
     # Update the last_hyperlink.txt file with the first hyperlink

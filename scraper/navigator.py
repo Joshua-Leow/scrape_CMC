@@ -10,10 +10,7 @@ def navigate_to_hyperlink(base_url, hyperlink, driver_path):
     try:
         driver.get(base_url[:-4] + hyperlink)
         print(f"Navigated to: {driver.current_url}")
-        
-        # Optional: Print the title of the page
         print(f"Page Title: {driver.title}")
-    
+
     finally:
-        # Quit the driver to clean up
         driver.quit()

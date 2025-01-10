@@ -71,6 +71,33 @@ def get_hyperlinks(base_url):
 def get_predicted_probability():
     return 0.50
 
+def extract_coin_name(input_string):
+    """Extracts the coin name from the given input string.
+
+    Args:
+      input_string: The input string containing the coin name.
+
+    Returns:
+      A string containing the coin name in the format "Coin Name (Abbreviation)".
+    """
+
+    try:
+        # Find the index of "by Virtuals price today,"
+        start_index = input_string.index("by Virtuals price today,")
+
+        # Find the index of " to USD live price"
+        end_index = input_string.index(" to USD live price")
+
+        # Extract the coin name and abbreviation
+        coin_name = input_string[:start_index]
+        abbreviation = input_string[start_index+24:end_index].strip()
+
+        # Return the formatted string
+        return f"{coin_name} ({abbreviation})"
+
+    except ValueError:
+        # Handle cases where the substrings are not found
+        return "Coin Name Not Found"
 
 def get_data_from_hyperlink(base_url, hyperlink, driver_path):
     # Use the Service class to specify the ChromeDriver path
@@ -79,18 +106,22 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
     try:
         driver.get(base_url[:-4] + hyperlink)
         print(f"  Navigated to: {driver.current_url}\n    Page Title: {driver.title}")
-        predicted_probability = get_predicted_probability()
+        opportunity = extract_coin_name(driver.title)
         owner_email = "owner@example.com"
+        stage = "Prospect"
+        est_value = 30000
         rep_email = "rep@example.com"
+        predicted_probability = get_predicted_probability()
+        notes = "Scraped from CoinMarketCap"
         result = [
-            driver.title,
+            opportunity,
             owner_email,
-            "Prospect",
-            "$30 000",
+            stage,
+            est_value,
             rep_email,
             predicted_probability,
             driver.current_url,
-            "Scraped from CoinMarketCap",  # Example remark
+            notes
         ]
 
     finally:

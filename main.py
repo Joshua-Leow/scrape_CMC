@@ -17,7 +17,7 @@ if __name__ == "__main__":
         exit()
 
     rows_to_update=[] # List of lists to store rows to be added to Google Sheet Table
-    for link in hyperlinks[::-1]:
+    for link in hyperlinks:
         rows_to_update.append(get_data_from_hyperlink(BASE_URL, link, CHROME_DRIVER_PATH))
 
     if len(hyperlinks) == MAX_ROWS:

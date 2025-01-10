@@ -74,8 +74,9 @@ def update_google_sheet(sheet_name, data, credentials_file="credentials.json"):
     # sheet2 = client.open(sheet_name).get_worksheet(1)
 
     # Append rows to the sheet
-    for row in data:
-        print(f"Inserted row {row} into Google Sheet.")
-        sheet1.insert_row(row,2)
+    # for row in data:
+    #     print(f"Inserted row {row} into Google Sheet.")
+    #     sheet1.insert_row(row,2)
+    sheet1.insert_rows(data,2)
 
     print("Google Sheet table updated successfully.")

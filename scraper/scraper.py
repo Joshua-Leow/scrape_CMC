@@ -3,6 +3,7 @@ import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 
+from config import MAX_ROWS
 from scraper.pages import *
 import os
 
@@ -40,7 +41,7 @@ def get_hyperlinks(base_url):
 
     hyperlinks = []
     first_hyperlink = None
-    max_rows = 10 if last_hyperlink else 2  # Limit rows based on the file existence
+    max_rows = MAX_ROWS if last_hyperlink else 1  # Limit rows based on the file existence
 
     for i in range(1, max_rows + 1):
         row_selector = f"tr:nth-child({i}) > td:nth-child(3) > a"
@@ -68,51 +69,48 @@ def get_hyperlinks(base_url):
     return hyperlinks
 
 
+def get_coin_name(soup):
+    coin_name_target = soup.select_one(COIN_NAME_TEXT)
+    coin_name = coin_name_target.get_text()[:-6] if coin_name_target else None
+    return coin_name
+
+def get_coin_symbol(soup):
+    coin_symbol_target = soup.select_one(COIN_SYMBOL_TEXT)
+    coin_symbol = coin_symbol_target.get_text() if coin_symbol_target else None
+    return coin_symbol
+
+def get_notes(soup):
+    about_notes_target = soup.select_one(ABOUT_TEXT)
+    about_notes = about_notes_target.get_text() if about_notes_target else None
+    return about_notes
+
 def get_predicted_probability():
     return 0.50
 
-def extract_coin_name(input_string):
-    """Extracts the coin name from the given input string.
-
-    Args:
-      input_string: The input string containing the coin name.
-
-    Returns:
-      A string containing the coin name in the format "Coin Name (Abbreviation)".
-    """
-
-    try:
-        # Find the index of "by Virtuals price today,"
-        start_index = input_string.index("by Virtuals price today,")
-
-        # Find the index of " to USD live price"
-        end_index = input_string.index(" to USD live price")
-
-        # Extract the coin name and abbreviation
-        coin_name = input_string[:start_index]
-        abbreviation = input_string[start_index+24:end_index].strip()
-
-        # Return the formatted string
-        return f"{coin_name} ({abbreviation})"
-
-    except ValueError:
-        # Handle cases where the substrings are not found
-        return "Coin Name Not Found"
 
 def get_data_from_hyperlink(base_url, hyperlink, driver_path):
     # Use the Service class to specify the ChromeDriver path
-    service = Service(driver_path)
-    driver = webdriver.Chrome(service=service)
+    # service = Service(driver_path)
+    # driver = webdriver.Chrome(service=service)
     try:
-        driver.get(base_url[:-4] + hyperlink)
-        print(f"  Navigated to: {driver.current_url}\n    Page Title: {driver.title}")
-        opportunity = extract_coin_name(driver.title)
+        url = base_url[:-4] + hyperlink
+        # driver.get(base_url[:-4] + hyperlink)
+
+        # Fetch the webpage
+        response = requests.get(url)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, "html.parser")
+        print(f"  Navigated to: {url}")
+
+        opportunity = get_coin_name(soup) + " (" + get_coin_symbol(soup) + ")"
         owner_email = "owner@example.com"
         stage = "Prospect"
         est_value = 30000
         rep_email = "rep@example.com"
         predicted_probability = get_predicted_probability()
-        notes = "Scraped from CoinMarketCap"
+        link = url
+        notes = get_notes(soup)
+
         result = [
             opportunity,
             owner_email,
@@ -120,11 +118,10 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
             est_value,
             rep_email,
             predicted_probability,
-            driver.current_url,
+            link,
             notes
         ]
-
     finally:
-        driver.quit()
+        pass
 
     return result

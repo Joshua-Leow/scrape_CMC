@@ -8,3 +8,6 @@ HEADERS = {
 
 # Path to WebDriver
 CHROME_DRIVER_PATH = "resources/chromedriver-mac-arm64/chromedriver"
+
+# Max rows to extract each run
+MAX_ROWS = 10

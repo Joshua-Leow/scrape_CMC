@@ -21,11 +21,10 @@ def update_google_sheet(sheet_name, data, credentials_file="credentials.json"):
 
     # Open the sheet
     sheet1 = client.open(sheet_name).sheet1
-    sheet2 = client.open(sheet_name).get_worksheet(1)
+    # sheet2 = client.open(sheet_name).get_worksheet(1)
 
     # Append rows to the sheet
     for row in data:
-        sheet2.insert_row(row,2)
-        # sheet2.append_row(row)
+        sheet1.insert_row(row,2)
 
     print("Google Sheet table updated successfully.")

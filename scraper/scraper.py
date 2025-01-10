@@ -68,20 +68,32 @@ def get_hyperlinks(base_url):
     return hyperlinks
 
 
-def get_data_from_hyperlink(rows_to_update, base_url, hyperlink, driver_path):
+def get_predicted_probability():
+    return 0.50
+
+
+def get_data_from_hyperlink(base_url, hyperlink, driver_path):
     # Use the Service class to specify the ChromeDriver path
     service = Service(driver_path)
     driver = webdriver.Chrome(service=service)
-
     try:
         driver.get(base_url[:-4] + hyperlink)
         print(f"  Navigated to: {driver.current_url}\n    Page Title: {driver.title}")
-        info=[
+        predicted_probability = get_predicted_probability()
+        owner_email = "owner@example.com"
+        rep_email = "rep@example.com"
+        result = [
+            driver.title,
+            owner_email,
+            "Prospect",
+            "$30 000",
+            rep_email,
+            predicted_probability,
             driver.current_url,
-            driver.title
+            "Scraped from CoinMarketCap",  # Example remark
         ]
-        rows_to_update.append(info)
+
     finally:
         driver.quit()
 
-    return rows_to_update
+    return result

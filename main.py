@@ -9,12 +9,16 @@ if __name__ == "__main__":
     driver = webdriver.Chrome(service=service)
     driver.get(BASE_URL)
 
-    hyperlinks = get_hyperlinks(BASE_URL)
+    hyperlinks = get_hyperlinks(BASE_URL) # List of hyperlinks
     driver.quit()
 
-    rows_to_update=[] # List of lists to store rows to be added to Google Sheet
+    if not hyperlinks:
+        print("There are no new listings in Coin Market Cap")
+        exit()
+
+    rows_to_update=[] # List of lists to store rows to be added to Google Sheet Table
     for link in hyperlinks[::-1]:
-        rows_to_update = get_data_from_hyperlink(rows_to_update, BASE_URL, link, CHROME_DRIVER_PATH) # List of lists to store rows to be added to Google Sheet
+        rows_to_update.append(get_data_from_hyperlink(BASE_URL, link, CHROME_DRIVER_PATH))
 
     # Update Google Sheets
     update_google_sheet(

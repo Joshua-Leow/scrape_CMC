@@ -99,9 +99,9 @@ def get_tags(soup):
 
 def get_exchange(soup, driver):
     # if soup.select_one(NO_DATA_TEXT): return None
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, "table.cmc-table > tbody"))
-    )
+    # WebDriverWait(driver, 10).until(
+    #     EC.presence_of_element_located((By.CSS_SELECTOR, MARKET_TITLE_TEXT))
+    # )
     exchanges = ""
     for i in range(2,11):
         EXCHANGE_TARGET = replace_str_index(MARKET_TITLE_TEXT, 39, str(i))
@@ -127,9 +127,24 @@ def get_notes(soup):
 
 def get_website(soup):
     website_target = soup.select_one(WEBSITE_LINK)
-    website = website_target["href"] if website_target else None
+    if website_target["href"]:
+        website = website_target["href"]
+        website = "https:" + website
+    else:
+        return None
     return website
 
+def get_x_link(soup):
+    X_link = None
+    for i in range(1,4):
+        X_TARGET = replace_str_index(SOCIALS_LINKS, -6, str(i))
+        x_element = soup.select_one(X_TARGET)
+        if x_element["href"]:
+            X_link = x_element["href"]
+            X_link = "https:" + X_link
+            if "twitter.com" in X_link:
+                return X_link
+    return X_link
 
 def get_predicted_probability():
     return 0.50
@@ -137,8 +152,8 @@ def get_predicted_probability():
 
 def get_data_from_hyperlink(base_url, hyperlink, driver_path):
     # Use the Service class to specify the ChromeDriver path
-    service = Service(driver_path)
-    driver = webdriver.Chrome(service=service)
+    # service = Service(driver_path)
+    # driver = webdriver.Chrome(service=service)
     try:
         url = base_url[:-4] + hyperlink
         # driver.get(base_url[:-4] + hyperlink)
@@ -152,15 +167,15 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
         name = get_coin_name(soup) + " (" + get_coin_symbol(soup) + ")"
         tags = get_tags(soup)
         # selenium open browser
-        driver.get(base_url[:-4] + hyperlink)
-        exchange = get_exchange(soup, driver)
-        driver.quit()
+        # driver.get(base_url[:-4] + hyperlink)
+        exchange = get_exchange(soup, None)
+        # driver.quit()
         stage = "Prospect"
         est_value = 30000
         contact = "rep@example.com"
         predicted_probability = get_predicted_probability()
         website = get_website(soup)
-        X_link = ""
+        X_link = get_x_link(soup)
         notes = get_notes(soup)
         source = url
 

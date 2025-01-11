@@ -7,6 +7,9 @@ from config import MAX_ROWS
 from scraper.pages import *
 import os
 
+def replace_str_index(text,index=0,replacement=''):
+    return f'{text[:index]}{replacement}{text[index+1:]}'
+
 def get_hyperlink(url):
     response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
     soup = BeautifulSoup(response.text, "html.parser")
@@ -79,10 +82,28 @@ def get_coin_symbol(soup):
     coin_symbol = coin_symbol_target.get_text() if coin_symbol_target else None
     return coin_symbol
 
+def get_tags(soup):
+    tags = ""
+    for i in range(1,4):
+        TAG_TARGET = replace_str_index(TAGS, -6, str(i))
+        tag_target = soup.select_one(TAG_TARGET)
+        tag = tag_target.get_text() if tag_target else None
+        if tag:
+            tags = tags + ", " + tag
+    tags = tags[2:] if tags else tags
+    tags = tags+", (and more)" if soup.select_one(SHOW_ALL_TAGS_BUTTON) else tags
+    return tags
+
 def get_notes(soup):
     about_notes_target = soup.select_one(ABOUT_TEXT)
     about_notes = about_notes_target.get_text() if about_notes_target else None
     return about_notes
+
+def get_website(soup):
+    website_target = soup.select_one(WEBSITE_LINK)
+    website = website_target["href"] if website_target else None
+    return website
+
 
 def get_predicted_probability():
     return 0.50
@@ -96,30 +117,37 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
         url = base_url[:-4] + hyperlink
         # driver.get(base_url[:-4] + hyperlink)
 
+
         # Fetch the webpage
         response = requests.get(url)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
         print(f"  Navigated to: {url}")
 
-        opportunity = get_coin_name(soup) + " (" + get_coin_symbol(soup) + ")"
-        owner_email = "owner@example.com"
+        name = get_coin_name(soup) + " (" + get_coin_symbol(soup) + ")"
+        tags = get_tags(soup)
+        exchange = ""
         stage = "Prospect"
         est_value = 30000
-        rep_email = "rep@example.com"
+        contact = "rep@example.com"
         predicted_probability = get_predicted_probability()
-        link = url
+        website = get_website(soup)
+        X_link = ""
         notes = get_notes(soup)
+        source = url
 
         result = [
-            opportunity,
-            owner_email,
+            name,
+            tags,
+            exchange,
             stage,
             est_value,
-            rep_email,
+            contact,
             predicted_probability,
-            link,
-            notes
+            website,
+            X_link,
+            notes,
+            source
         ]
     finally:
         pass

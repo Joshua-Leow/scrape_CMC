@@ -25,7 +25,7 @@ SOCIALS_LINKS = f"div.CoinInfoLinks_info-items-wrapper__dHVKe > div:nth-child(2)
 ABOUT_TEXT = "#section-coin-about > div.sc-4fc2860f-0.eyGmhU > div:nth-child(2) > section > div > div > div > div > div"
 # ABOUT_TEXT = "#section-coin-about > div.sc-4fc2860f-0.eyGmhU > div:nth-child(2) > section > div > div > div > div > div > div or span"
 SHOW_ALL_TAGS_BUTTON = "#__next > div.sc-f9c982a5-1.bVsWPX.global-layout-v2 > div > div.cmc-body-wrapper > div > div > div.sc-4c05d6ef-0.sc-da3461a8-0.dlQYLv.iwYbsh.coin-stats > div > div.sc-65e7f566-0.eGAMZw > section > div > div.sc-65e7f566-0.fFHGof.coin-tags > div.sc-65e7f566-0.eQBACe > div > span.sc-65e7f566-0.sc-9ee74f67-1.ckjyAl.izfTnl"
-# TAGS = f"#__next > div.sc-f9c982a5-1.bVsWPX.global-layout-v2 > div > div.cmc-body-wrapper > div > div > div.sc-4c05d6ef-0.sc-da3461a8-0.dlQYLv.iwYbsh.coin-stats > div > div.sc-65e7f566-0.eGAMZw > section > div > div.sc-65e7f566-0.fFHGof.coin-tags > div.sc-65e7f566-0.eQBACe > div > span:nth-child({enumerate}) > a"
+TAGS = "#__next > div.sc-f9c982a5-1.bVsWPX.global-layout-v2 > div > div.cmc-body-wrapper > div > div > div.sc-4c05d6ef-0.sc-da3461a8-0.dlQYLv.iwYbsh.coin-stats > div > div.sc-65e7f566-0.eGAMZw > section > div > div.sc-65e7f566-0.fFHGof.coin-tags > div.sc-65e7f566-0.eQBACe > div > span:nth-child(1) > a"
 # Get all <a> tags from TAGS_SECTION
 TAGS_SECTION = "body > div.sc-acb6320-0.jPvGvf.modalOpened > div > div.sc-acb6320-2.kUrwGA.cmc-modal-body.has-title > div"
 

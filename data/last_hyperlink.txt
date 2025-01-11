@@ -1,1 +1,1 @@
-/currencies/sentai-iotex/
+/currencies/ai-glasses/

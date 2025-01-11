@@ -1,7 +1,10 @@
 from bs4 import BeautifulSoup
 import requests
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support import expected_conditions as EC
 
 from config import MAX_ROWS
 from scraper.pages import *
@@ -94,6 +97,29 @@ def get_tags(soup):
     tags = tags+", (and more)" if soup.select_one(SHOW_ALL_TAGS_BUTTON) else tags
     return tags
 
+def get_exchange(soup, driver):
+    # if soup.select_one(NO_DATA_TEXT): return None
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, "table.cmc-table > tbody"))
+    )
+    exchanges = ""
+    for i in range(2,11):
+        EXCHANGE_TARGET = replace_str_index(MARKET_TITLE_TEXT, 39, str(i))
+        exchange_target = soup.select_one(EXCHANGE_TARGET)
+        print(f"exchange_target is: {exchange_target}")
+        vol_perc_target = soup.select_one(VOL_PERC_TEXT)
+        exchanges = []
+        if exchange_target:
+            exchange_data = exchange_target.get_text()
+            if vol_perc_target:
+                exchange_data = exchange_data + " (" + vol_perc_target.get_text() + ")"
+            if exchange_data:
+                exchanges.append(exchange_data)
+        else:
+            break
+    exchanges = ", ".join(list(set(exchanges)))
+    return exchanges
+
 def get_notes(soup):
     about_notes_target = soup.select_one(ABOUT_TEXT)
     about_notes = about_notes_target.get_text() if about_notes_target else None
@@ -111,12 +137,11 @@ def get_predicted_probability():
 
 def get_data_from_hyperlink(base_url, hyperlink, driver_path):
     # Use the Service class to specify the ChromeDriver path
-    # service = Service(driver_path)
-    # driver = webdriver.Chrome(service=service)
+    service = Service(driver_path)
+    driver = webdriver.Chrome(service=service)
     try:
         url = base_url[:-4] + hyperlink
         # driver.get(base_url[:-4] + hyperlink)
-
 
         # Fetch the webpage
         response = requests.get(url)
@@ -126,7 +151,10 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
 
         name = get_coin_name(soup) + " (" + get_coin_symbol(soup) + ")"
         tags = get_tags(soup)
-        exchange = ""
+        # selenium open browser
+        driver.get(base_url[:-4] + hyperlink)
+        exchange = get_exchange(soup, driver)
+        driver.quit()
         stage = "Prospect"
         est_value = 30000
         contact = "rep@example.com"

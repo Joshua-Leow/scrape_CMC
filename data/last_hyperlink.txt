@@ -1,1 +1,1 @@
-/currencies/ai-glasses/
+/currencies/small-language-model/

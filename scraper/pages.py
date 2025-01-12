@@ -35,6 +35,7 @@ SHOW_CEX_BUTTON = "#section-coin-markets > section > div > div:nth-child(1) > di
 SHOW_DEX_BUTTON = "#section-coin-markets > section > div > div:nth-child(1) > div > div > div > div:nth-child(1) > button:nth-child(4)"
 NO_DATA_TEXT = "#section-coin-markets > section > div > div.sc-40bc2850-0.fARwNm > div.sc-936354b2-2.cXaKXy > table > tbody > tr > td > div > h2"
 # enumerate from nth-child(2) onwards
+
 MARKET_TITLE_TEXT = "table.cmc-table > tbody > tr:nth-child(2) > td > span > a > div > div > p"
 VOL_PERC_TEXT = "table.cmc-table > tbody > tr:nth-child(2) > td:nth-child(8) > span"
 LIQUIDITY_TEXT = "table.cmc-table > tbody > tr:nth-child(2) > td:nth-child(10) > span"

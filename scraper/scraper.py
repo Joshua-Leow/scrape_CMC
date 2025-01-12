@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support import expected_conditions as EC
 
+
 from config import MAX_ROWS
 from scraper.pages import *
 import os
@@ -97,27 +98,31 @@ def get_tags(soup):
     tags = tags+", (and more)" if soup.select_one(SHOW_ALL_TAGS_BUTTON) else tags
     return tags
 
-def get_exchange(soup, driver):
-    # if soup.select_one(NO_DATA_TEXT): return None
-    # WebDriverWait(driver, 10).until(
-    #     EC.presence_of_element_located((By.CSS_SELECTOR, MARKET_TITLE_TEXT))
-    # )
-    exchanges = ""
-    for i in range(2,11):
+def get_exchange(driver):
+    coin_markets_element = driver.find_element(By.ID, "section-coin-markets")
+    driver.execute_script("arguments[0].scrollIntoView();", coin_markets_element)
+    WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, MARKET_TITLE_TEXT))
+    num_rows = len(driver.find_elements(By.CSS_SELECTOR, "table.cmc-table > tbody > tr"))
+    # print(f"num_rows: {num_rows}")
+    exchanges = []
+    for i in range(2,num_rows+1):
         EXCHANGE_TARGET = replace_str_index(MARKET_TITLE_TEXT, 39, str(i))
-        exchange_target = soup.select_one(EXCHANGE_TARGET)
-        print(f"exchange_target is: {exchange_target}")
-        vol_perc_target = soup.select_one(VOL_PERC_TEXT)
-        exchanges = []
-        if exchange_target:
-            exchange_data = exchange_target.get_text()
-            if vol_perc_target:
-                exchange_data = exchange_data + " (" + vol_perc_target.get_text() + ")"
+        exchange_element = driver.find_element(By.CSS_SELECTOR, EXCHANGE_TARGET)
+        VOL_PERC_TARGET = replace_str_index(VOL_PERC_TEXT, 39, str(i))
+        vol_perc_target = driver.find_element(By.CSS_SELECTOR, VOL_PERC_TARGET)
+        if exchange_element:
+            exchange_data = exchange_element.text
+            # print(f"exchange data: {exchange_data}")
+            if vol_perc_target != '--%':
+                exchange_data = exchange_data + "[" + vol_perc_target.text + "]"
             if exchange_data:
                 exchanges.append(exchange_data)
+                # print(f"exchanges list: {exchanges}")
         else:
             break
+
     exchanges = ", ".join(list(set(exchanges)))
+    # print(f"List of exchanges are: {exchanges}")
     return exchanges
 
 def get_notes(soup):
@@ -152,11 +157,11 @@ def get_predicted_probability():
 
 def get_data_from_hyperlink(base_url, hyperlink, driver_path):
     # Use the Service class to specify the ChromeDriver path
-    # service = Service(driver_path)
-    # driver = webdriver.Chrome(service=service)
+    service = Service(driver_path)
+    driver = webdriver.Chrome(service=service)
     try:
         url = base_url[:-4] + hyperlink
-        # driver.get(base_url[:-4] + hyperlink)
+        driver.get(base_url[:-4] + hyperlink)
 
         # Fetch the webpage
         response = requests.get(url)
@@ -167,9 +172,9 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
         name = get_coin_name(soup) + " (" + get_coin_symbol(soup) + ")"
         tags = get_tags(soup)
         # selenium open browser
-        # driver.get(base_url[:-4] + hyperlink)
-        exchange = get_exchange(soup, None)
-        # driver.quit()
+        driver.get(base_url[:-4] + hyperlink)
+        exchange = get_exchange(driver)
+        driver.quit()
         stage = "Prospect"
         est_value = 30000
         contact = "rep@example.com"

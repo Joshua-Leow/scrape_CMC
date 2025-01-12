@@ -77,78 +77,106 @@ def get_hyperlinks(base_url):
 
 
 def get_coin_name(soup):
-    coin_name_target = soup.select_one(COIN_NAME_TEXT)
-    coin_name = coin_name_target.get_text()[:-6] if coin_name_target else None
+    try:
+        coin_name_target = soup.select_one(COIN_NAME_TEXT)
+        coin_name = coin_name_target.get_text()[:-6] if coin_name_target else None
+    except Exception as e:
+        print(e)
+        return None
     return coin_name
 
 def get_coin_symbol(soup):
-    coin_symbol_target = soup.select_one(COIN_SYMBOL_TEXT)
-    coin_symbol = coin_symbol_target.get_text() if coin_symbol_target else None
+    try:
+        coin_symbol_target = soup.select_one(COIN_SYMBOL_TEXT)
+        coin_symbol = coin_symbol_target.get_text() if coin_symbol_target else None
+    except Exception as e:
+        print(e)
+        return None
     return coin_symbol
 
 def get_tags(soup):
     tags = ""
-    for i in range(1,4):
-        TAG_TARGET = replace_str_index(TAGS, -6, str(i))
-        tag_target = soup.select_one(TAG_TARGET)
-        tag = tag_target.get_text() if tag_target else None
-        if tag:
-            tags = tags + ", " + tag
-    tags = tags[2:] if tags else tags
-    tags = tags+", (and more)" if soup.select_one(SHOW_ALL_TAGS_BUTTON) else tags
+    try:
+        for i in range(1,4):
+            TAG_TARGET = replace_str_index(TAGS, -6, str(i))
+            tag_target = soup.select_one(TAG_TARGET)
+            tag = tag_target.get_text() if tag_target else None
+            if tag:
+                tags = tags + ", " + tag
+        tags = tags[2:] if tags else tags
+        tags = tags+", (and more)" if soup.select_one(SHOW_ALL_TAGS_BUTTON) else tags
+    except Exception as e:
+        print(e)
+        return None
     return tags
 
 def get_exchange(driver):
-    coin_markets_element = driver.find_element(By.ID, "section-coin-markets")
-    driver.execute_script("arguments[0].scrollIntoView();", coin_markets_element)
-    WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, MARKET_TITLE_TEXT))
-    num_rows = len(driver.find_elements(By.CSS_SELECTOR, "table.cmc-table > tbody > tr"))
-    # print(f"num_rows: {num_rows}")
-    exchanges = []
-    for i in range(2,num_rows+1):
-        EXCHANGE_TARGET = replace_str_index(MARKET_TITLE_TEXT, 39, str(i))
-        exchange_element = driver.find_element(By.CSS_SELECTOR, EXCHANGE_TARGET)
-        VOL_PERC_TARGET = replace_str_index(VOL_PERC_TEXT, 39, str(i))
-        vol_perc_target = driver.find_element(By.CSS_SELECTOR, VOL_PERC_TARGET)
-        if exchange_element:
-            exchange_data = exchange_element.text
-            # print(f"exchange data: {exchange_data}")
-            if vol_perc_target != '--%':
-                exchange_data = exchange_data + "[" + vol_perc_target.text + "]"
-            if exchange_data:
-                exchanges.append(exchange_data)
-                # print(f"exchanges list: {exchanges}")
-        else:
-            break
+    try:
+        coin_markets_element = driver.find_element(By.ID, "section-coin-markets")
+        driver.execute_script("arguments[0].scrollIntoView();", coin_markets_element)
+        WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, MARKET_TITLE_TEXT))
+        num_rows = len(driver.find_elements(By.CSS_SELECTOR, "table.cmc-table > tbody > tr"))
+        # print(f"num_rows: {num_rows}")
+        exchanges = []
+        for i in range(2,num_rows+1):
+            EXCHANGE_TARGET = replace_str_index(MARKET_TITLE_TEXT, 39, str(i))
+            exchange_element = driver.find_element(By.CSS_SELECTOR, EXCHANGE_TARGET)
+            VOL_PERC_TARGET = replace_str_index(VOL_PERC_TEXT, 39, str(i))
+            vol_perc_target = driver.find_element(By.CSS_SELECTOR, VOL_PERC_TARGET)
+            if exchange_element:
+                exchange_data = exchange_element.text
+                # print(f"exchange data: {exchange_data}")
+                if vol_perc_target != '--%':
+                    exchange_data = exchange_data + "[" + vol_perc_target.text + "]"
+                if exchange_data:
+                    exchanges.append(exchange_data)
+                    # print(f"exchanges list: {exchanges}")
+            else:
+                break
 
-    exchanges = ", ".join(list(set(exchanges)))
-    # print(f"List of exchanges are: {exchanges}")
+        exchanges = ", ".join(list(set(exchanges)))
+        # print(f"List of exchanges are: {exchanges}")
+    except Exception as e:
+        print(e)
+        return None
     return exchanges
 
 def get_notes(soup):
-    about_notes_target = soup.select_one(ABOUT_TEXT)
-    about_notes = about_notes_target.get_text() if about_notes_target else None
+    try:
+        about_notes_target = soup.select_one(ABOUT_TEXT)
+        about_notes = about_notes_target.get_text() if about_notes_target else None
+    except Exception as e:
+        print(e)
+        return None
     return about_notes
 
 def get_website(soup):
-    website_target = soup.select_one(WEBSITE_LINK)
-    if website_target["href"]:
-        website = website_target["href"]
-        website = "https:" + website
-    else:
+    try:
+        website_target = soup.select_one(WEBSITE_LINK)
+        if website_target["href"]:
+            website = website_target["href"]
+            website = "https:" + website
+        else:
+            return None
+    except Exception as e:
+        print(e)
         return None
     return website
 
 def get_x_link(soup):
-    X_link = None
-    for i in range(1,4):
-        X_TARGET = replace_str_index(SOCIALS_LINKS, -6, str(i))
-        x_element = soup.select_one(X_TARGET)
-        if x_element["href"]:
-            X_link = x_element["href"]
-            X_link = "https:" + X_link
-            if "twitter.com" in X_link:
-                return X_link
+    try:
+        X_link = None
+        for i in range(1,4):
+            X_TARGET = replace_str_index(SOCIALS_LINKS, -6, str(i))
+            x_element = soup.select_one(X_TARGET)
+            if x_element["href"]:
+                X_link = x_element["href"]
+                X_link = "https:" + X_link
+                if "twitter.com" in X_link:
+                    return X_link
+    except Exception as e:
+        print(e)
+        return None
     return X_link
 
 def get_predicted_probability():

@@ -6,7 +6,6 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.support import expected_conditions as EC
 
 
 from config import MAX_ROWS
@@ -141,7 +140,7 @@ def get_exchange(driver, all_exchange=True):
         except:
             pass
         num_rows = len(driver.find_elements(By.CSS_SELECTOR, "table.cmc-table > tbody > tr"))
-        print(f"num_rows: {num_rows}")
+        # print(f"num_rows: {num_rows}")
         exchanges = []
         for i in range(2,num_rows+1):
             EXCHANGE_TARGET = replace_str_index(MARKET_TITLE_TEXT, 39, str(i))
@@ -158,7 +157,7 @@ def get_exchange(driver, all_exchange=True):
                 break
         sorted_exchanges = sorted(list(set(exchanges)), key=extract_percentage, reverse=True)
         sorted_exchanges = ", ".join(sorted_exchanges)
-        print(f"List of sorted exchanges are: {sorted_exchanges}")
+        # print(f"List of sorted exchanges are: {sorted_exchanges}")
     except Exception as e:
         print("fail at get_exchange exception")
         print(e)

@@ -5,14 +5,7 @@ from config import BASE_URL, CHROME_DRIVER_PATH
 from scraper.scraper import get_data_from_hyperlink
 
 if __name__ == "__main__":
-    # Use the Service class to specify the ChromeDriver path
-    # service = Service(CHROME_DRIVER_PATH)
-    # driver = webdriver.Chrome(service=service)
-    # driver.get(BASE_URL)
-
     hyperlinks = get_hyperlinks(BASE_URL) # List of hyperlinks
-    # driver.quit()
-
     if not hyperlinks:
         print("There are no new listings in Coin Market Cap")
         exit()

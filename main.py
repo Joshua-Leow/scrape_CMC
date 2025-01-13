@@ -12,14 +12,16 @@ if __name__ == "__main__":
 
     hyperlinks = get_hyperlinks(BASE_URL) # List of hyperlinks
     # driver.quit()
-    test()
+
     if not hyperlinks:
         print("There are no new listings in Coin Market Cap")
         exit()
 
     rows_to_update=[] # List of lists to store rows to be added to Google Sheet Table
     for link in hyperlinks:
-        rows_to_update.append(get_data_from_hyperlink(BASE_URL, link, CHROME_DRIVER_PATH))
+        result = get_data_from_hyperlink(BASE_URL, link, CHROME_DRIVER_PATH)
+        result.insert(-2, gen_ai(result))
+        rows_to_update.append(result)
 
     if len(hyperlinks) == MAX_ROWS:
         append_empty_row_google_sheet(sheet_name="CMC_new")

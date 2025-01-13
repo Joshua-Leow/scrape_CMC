@@ -1,3 +1,5 @@
+import re
+
 from bs4 import BeautifulSoup
 import requests
 from selenium import webdriver
@@ -111,22 +113,24 @@ def get_tags(soup):
     return tags
 
 def get_vol_perc(driver, i, exchange_data):
+    vol_perc_float = None
     VOL_PERC_TARGET = replace_str_index(VOL_PERC_TEXT, 39, str(i))
     vol_perc_text = driver.find_element(By.CSS_SELECTOR, VOL_PERC_TARGET).text
-    print(f"vol_perc_text is: {vol_perc_text}")
+    # print(f"vol_perc_text is: {vol_perc_text}")
     if vol_perc_text != '--%':
         if vol_perc_text == '<0.01%':
-            vol_perc_float = 0.01
-        elif vol_perc_text != 'Recently':
-            # TODO: write code if they recently added a new exchange
-            pass
-        else:
-            try:
-                vol_perc_float = float(vol_perc_text[:-1])
-            except Exception as e:
-                print(e)
+            vol_perc_text = "0.01"
+        # else:
+        #     try:
+        #         vol_perc_float = float(vol_perc_text[:-1])
+        #     except Exception as e:
+        #         print(e)
         exchange_data = exchange_data + "[" + vol_perc_text + "]"
-    return exchange_data
+    return exchange_data, vol_perc_float
+
+def extract_percentage(item):
+    match = re.search(r"\[(\d+\.?\d*)%]", item)  # Regex to extract percentage
+    return float(match.group(1)) if match else -1  # Return -1 for items without percentage
 
 def get_exchange(driver, all_exchange=True):
     try:
@@ -146,20 +150,20 @@ def get_exchange(driver, all_exchange=True):
                 exchange_data = exchange_element.text
                 # print(f"exchange data: {exchange_data}")
                 if all_exchange:
-                    exchange_data = get_vol_perc(driver, i, exchange_data)
+                    exchange_data, vol_perc_float = get_vol_perc(driver, i, exchange_data)
                 if exchange_data:
                     exchanges.append(exchange_data)
                     # print(f"exchanges list: {exchanges}")
             else:
                 break
-
-        exchanges = ", ".join(list(set(exchanges)))
-        print(f"List of exchanges are: {exchanges}")
+        sorted_exchanges = sorted(list(set(exchanges)), key=extract_percentage, reverse=True)
+        sorted_exchanges = ", ".join(sorted_exchanges)
+        print(f"List of sorted exchanges are: {sorted_exchanges}")
     except Exception as e:
         print("fail at get_exchange exception")
         print(e)
         return None
-    return exchanges
+    return sorted_exchanges
 
 def get_cex_exchange(driver):
     try:

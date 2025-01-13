@@ -1,3 +1,4 @@
+from genai import *
 from google_sheets import update_google_sheet, append_empty_row_google_sheet
 from scraper.scraper import *
 from config import BASE_URL, CHROME_DRIVER_PATH
@@ -11,7 +12,7 @@ if __name__ == "__main__":
 
     hyperlinks = get_hyperlinks(BASE_URL) # List of hyperlinks
     # driver.quit()
-
+    test()
     if not hyperlinks:
         print("There are no new listings in Coin Market Cap")
         exit()

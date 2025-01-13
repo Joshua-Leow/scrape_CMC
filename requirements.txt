@@ -11,3 +11,4 @@ selenium==4.11.2
 pytest==7.4.0
 google-auth
 gspread
+google-generativeai

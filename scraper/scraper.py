@@ -110,24 +110,43 @@ def get_tags(soup):
         return None
     return tags
 
-def get_exchange(driver):
+def get_vol_perc(driver, i, exchange_data):
+    VOL_PERC_TARGET = replace_str_index(VOL_PERC_TEXT, 39, str(i))
+    vol_perc_text = driver.find_element(By.CSS_SELECTOR, VOL_PERC_TARGET).text
+    print(f"vol_perc_text is: {vol_perc_text}")
+    if vol_perc_text != '--%':
+        if vol_perc_text == '<0.01%':
+            vol_perc_float = 0.01
+        elif vol_perc_text != 'Recently':
+            # TODO: write code if they recently added a new exchange
+            pass
+        else:
+            try:
+                vol_perc_float = float(vol_perc_text[:-1])
+            except Exception as e:
+                print(e)
+        exchange_data = exchange_data + "[" + vol_perc_text + "]"
+    return exchange_data
+
+def get_exchange(driver, all_exchange=True):
     try:
-        coin_markets_element = driver.find_element(By.ID, "section-coin-markets")
-        driver.execute_script("arguments[0].scrollIntoView();", coin_markets_element)
-        WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, MARKET_TITLE_TEXT))
+        try:
+            if driver.find_element(By.CSS_SELECTOR, NO_DATA_TEXT).is_displayed():
+                print("fail at NO_DATA_TEXT displayed")
+                return None
+        except:
+            pass
         num_rows = len(driver.find_elements(By.CSS_SELECTOR, "table.cmc-table > tbody > tr"))
-        # print(f"num_rows: {num_rows}")
+        print(f"num_rows: {num_rows}")
         exchanges = []
         for i in range(2,num_rows+1):
             EXCHANGE_TARGET = replace_str_index(MARKET_TITLE_TEXT, 39, str(i))
             exchange_element = driver.find_element(By.CSS_SELECTOR, EXCHANGE_TARGET)
-            VOL_PERC_TARGET = replace_str_index(VOL_PERC_TEXT, 39, str(i))
-            vol_perc_target = driver.find_element(By.CSS_SELECTOR, VOL_PERC_TARGET)
             if exchange_element:
                 exchange_data = exchange_element.text
                 # print(f"exchange data: {exchange_data}")
-                if vol_perc_target != '--%':
-                    exchange_data = exchange_data + "[" + vol_perc_target.text + "]"
+                if all_exchange:
+                    exchange_data = get_vol_perc(driver, i, exchange_data)
                 if exchange_data:
                     exchanges.append(exchange_data)
                     # print(f"exchanges list: {exchanges}")
@@ -135,8 +154,33 @@ def get_exchange(driver):
                 break
 
         exchanges = ", ".join(list(set(exchanges)))
-        # print(f"List of exchanges are: {exchanges}")
+        print(f"List of exchanges are: {exchanges}")
     except Exception as e:
+        print("fail at get_exchange exception")
+        print(e)
+        return None
+    return exchanges
+
+def get_cex_exchange(driver):
+    try:
+        driver.execute_script("arguments[0].click();", driver.find_element(By.CSS_SELECTOR, SHOW_CEX_BUTTON))
+        WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, "#section-coin-markets > section > div > div:nth-child(1) > p"))
+        driver.implicitly_wait(1)
+        exchanges = get_exchange(driver, all_exchange=False)
+    except Exception as e:
+        print("fail at get_cex_exchange exception")
+        print(e)
+        return None
+    return exchanges
+
+def get_dex_exchange(driver):
+    try:
+        driver.execute_script("arguments[0].click();", driver.find_element(By.CSS_SELECTOR, SHOW_DEX_BUTTON))
+        WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, "#section-coin-markets > section > div > div:nth-child(1) > p"))
+        driver.implicitly_wait(1)
+        exchanges = get_exchange(driver, all_exchange=False)
+    except Exception as e:
+        print("fail at get_dex_exchange exception")
         print(e)
         return None
     return exchanges
@@ -182,6 +226,15 @@ def get_x_link(soup):
 def get_predicted_probability():
     return 0.50
 
+def get_important(soup):
+    try:
+        important_target = soup.select_one(IMPORTANT_TEXT)
+        important_text = important_target.get_text() if important_target else None
+    except Exception as e:
+        print(e)
+        return None
+    return important_text
+
 
 def get_data_from_hyperlink(base_url, hyperlink, driver_path):
     # Use the Service class to specify the ChromeDriver path
@@ -201,7 +254,12 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
         tags = get_tags(soup)
         # selenium open browser
         driver.get(base_url[:-4] + hyperlink)
+        coin_markets_element = driver.find_element(By.ID, "section-coin-markets")
+        driver.execute_script("arguments[0].scrollIntoView();", coin_markets_element)
+        WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, MARKET_TITLE_TEXT))
         exchange = get_exchange(driver)
+        # dex_exchange = get_dex_exchange(driver)
+        cex_exchange = get_cex_exchange(driver)
         driver.quit()
         stage = "Prospect"
         est_value = 30000
@@ -211,11 +269,14 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
         X_link = get_x_link(soup)
         notes = get_notes(soup)
         source = url
+        impt = get_important(soup)
 
         result = [
             name,
             tags,
             exchange,
+            # dex_exchange,
+            cex_exchange,
             stage,
             est_value,
             contact,
@@ -223,7 +284,8 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
             website,
             X_link,
             notes,
-            source
+            source,
+            impt
         ]
     finally:
         pass

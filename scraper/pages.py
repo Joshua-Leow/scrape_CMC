@@ -12,6 +12,8 @@ COIN_NAME_TEXT = "#section-coin-overview > div.sc-65e7f566-0.gLzlll > h1 > span"
 COIN_SYMBOL_TEXT = "#section-coin-overview > div.sc-65e7f566-0.gLzlll > h1 > div.sc-65e7f566-0.cBEDwf.coin-symbol-wrapper > span"
 CMC_RANK_TEXT = "#section-coin-overview > div.sc-65e7f566-0.gLzlll > h1 > div.BasePopover_base__T5yOf.popover-base > div > span.BaseChip_btnContentWrapper__5wLR1 > div > span"
 
+IMPORTANT_TEXT = "#__next > div.sc-f9c982a5-1.bVsWPX.global-layout-v2 > div > div.cmc-body-wrapper > div > div > div.sc-65e7f566-0.ljtNVi.notice-container > section > div > div > span"
+
 MARKET_CAP_TEXT = "#section-coin-stats > div > div > dl > div:nth-child(1) > div > dd > div > div.CoinMetrics_overflow-content__tlFu7 > div > span"
 TWENTYFOUR_HR_VOL_TEXT = "#section-coin-stats > div > div > dl > div:nth-child(2) > div > dd > div > div.CoinMetrics_overflow-content__tlFu7 > div > span"
 FDV_TEXT = "#section-coin-stats > div > div > dl > div:nth-child(3) > div > dd > div > div > div > span"

@@ -254,6 +254,7 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
         tags = get_tags(soup)
         # selenium open browser
         driver.get(base_url[:-4] + hyperlink)
+        exchange, cex_exchange, dex_exchange = "", "", ""
         try:
             coin_markets_element = driver.find_element(By.ID, "section-coin-markets")
             driver.execute_script("arguments[0].scrollIntoView();", coin_markets_element)

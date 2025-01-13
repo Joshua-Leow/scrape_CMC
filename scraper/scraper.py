@@ -254,12 +254,16 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
         tags = get_tags(soup)
         # selenium open browser
         driver.get(base_url[:-4] + hyperlink)
-        coin_markets_element = driver.find_element(By.ID, "section-coin-markets")
-        driver.execute_script("arguments[0].scrollIntoView();", coin_markets_element)
-        WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, MARKET_TITLE_TEXT))
-        exchange = get_exchange(driver)
-        # dex_exchange = get_dex_exchange(driver)
-        cex_exchange = get_cex_exchange(driver)
+        try:
+            coin_markets_element = driver.find_element(By.ID, "section-coin-markets")
+            driver.execute_script("arguments[0].scrollIntoView();", coin_markets_element)
+            WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, MARKET_TITLE_TEXT))
+            exchange = get_exchange(driver)
+            # dex_exchange = get_dex_exchange(driver)
+            cex_exchange = get_cex_exchange(driver)
+        except Exception as e:
+            print("Failed to get exchange data")
+            print(e)
         driver.quit()
         stage = "Prospect"
         est_value = 30000

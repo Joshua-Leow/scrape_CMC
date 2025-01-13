@@ -9,4 +9,3 @@ env/
 .DS_Store
 resources/
 credentials.json
-constants.py

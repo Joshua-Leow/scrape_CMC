@@ -5,18 +5,19 @@ from config import BASE_URL, CHROME_DRIVER_PATH
 from scraper.scraper import get_data_from_hyperlink
 
 if __name__ == "__main__":
-    hyperlinks = get_hyperlinks(BASE_URL) # List of hyperlinks
-    if not hyperlinks:
+    hyperlinks_time = get_hyperlinks_time(BASE_URL) # List of tuple (hyperlinks, time)
+    if not hyperlinks_time:
         print("There are no new listings in Coin Market Cap")
         exit()
 
     rows_to_update=[] # List of lists to store rows to be added to Google Sheet Table
-    for link in hyperlinks:
-        result = get_data_from_hyperlink(BASE_URL, link, CHROME_DRIVER_PATH)
+    for link_time_tuple in hyperlinks_time:
+        result = get_data_from_hyperlink(BASE_URL, link_time_tuple[0], CHROME_DRIVER_PATH)
+        result.insert(0, link_time_tuple[1])
         result.insert(-2, gen_ai(result))
         rows_to_update.append(result)
 
-    if len(hyperlinks) == MAX_ROWS:
+    if len(hyperlinks_time) == MAX_ROWS:
         append_empty_row_google_sheet(sheet_name="CMC_new")
         # pass
     # Update Google Sheets

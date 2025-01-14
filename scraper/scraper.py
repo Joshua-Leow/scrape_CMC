@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 
-
+from datetime import datetime, timedelta
 from config import MAX_ROWS
 from scraper.pages import *
 import os
@@ -23,7 +23,7 @@ def get_hyperlink(url):
     hyperlink = soup.select_one(FIRST_HYPERLINK)
     return hyperlink["href"] if hyperlink else None
 
-def get_hyperlinks(base_url):
+def get_hyperlinks_time(base_url):
     script_dir = os.path.dirname(__file__)
     rel_path = "../data/last_hyperlink.txt"
     abs_file_path = os.path.join(script_dir, rel_path)
@@ -47,26 +47,40 @@ def get_hyperlinks(base_url):
     if not table:
         raise ValueError("Table not found on the webpage")
 
-    hyperlinks = []
+    hyperlinks_time = []
     first_hyperlink = None
     max_rows = MAX_ROWS if last_hyperlink else 1  # Limit rows based on the file existence
 
     for i in range(1, max_rows + 1):
-        row_selector = f"tr:nth-child({i}) > td:nth-child(3) > a"
-        link_tag = table.select_one(row_selector)
-
+        link_selector = f"tr:nth-child({i}) > td:nth-child(3) > a"
+        link_tag = table.select_one(link_selector)
         if not link_tag or "href" not in link_tag.attrs:
             continue
-
         hyperlink = link_tag["href"]
         if i == 1:
             first_hyperlink = hyperlink  # Remember the first hyperlink
-
         if hyperlink == last_hyperlink:
             break  # Stop if the hyperlink matches last_hyperlink.txt
 
-        hyperlinks.append(hyperlink)
-        print(f"Row {i} link is: {hyperlink}")
+        time_selector = "tr:nth-child(1) > td:nth-child(10)"
+        time_text = table.select_one(time_selector).text
+        ini_time_for_now = datetime.now() - timedelta(minutes=i)
+        time = None
+        try:
+            num = int(time_text.split()[0])
+            if time_text[-11:] == 'minutes ago' or time_text[-10:] == 'minute ago':
+                time = ini_time_for_now - timedelta(minutes=num)
+            elif time_text[-9:] == 'hours ago' or time_text[-8:] == 'hour ago':
+                time = ini_time_for_now - timedelta(hours=num)
+            elif time_text[-8:] == 'days ago' or time_text[-7:] == 'day ago':
+                time = ini_time_for_now - timedelta(days=num)
+            time = time.strftime("%Y-%m-%d %H:%M")
+        except Exception as e:
+            print(e)
+
+        hyperlinks_time.append((hyperlink,time))
+        print(f"Row {i} hyperlink is: {hyperlink}")
+        print(f"      time is: {time}")
 
     # Update the last_hyperlink.txt file with the first hyperlink
     if first_hyperlink:
@@ -74,8 +88,7 @@ def get_hyperlinks(base_url):
             file.write(first_hyperlink)
             print(f"Updated link in last_hyperlink.txt to: {first_hyperlink}")
 
-    return hyperlinks
-
+    return hyperlinks_time
 
 def get_coin_name(soup):
     try:
@@ -94,6 +107,15 @@ def get_coin_symbol(soup):
         print(e)
         return None
     return coin_symbol
+
+def get_mcap(soup):
+    try:
+        market_cap_target = soup.select_one(MARKET_CAP_TEXT)
+        market_cap = market_cap_target.get_text() if market_cap_target else None
+    except Exception as e:
+        print(e)
+        return None
+    return market_cap
 
 def get_tags(soup):
     tags = ""
@@ -254,6 +276,7 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
         print(f"  Navigated to: {url}")
 
         name = get_coin_name(soup) + " (" + get_coin_symbol(soup) + ")"
+        mcap = get_mcap(soup)
         tags = get_tags(soup)
         # selenium open browser
         driver.get(base_url[:-4] + hyperlink)
@@ -281,6 +304,7 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
 
         result = [
             name,
+            mcap,
             tags,
             exchange,
             # dex_exchange,

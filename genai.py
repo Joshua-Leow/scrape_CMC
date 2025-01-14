@@ -9,10 +9,10 @@ def gen_ai(result):
               "Now, write for me a casual personalised pitch to this startup, attracting them to the benefits of listing their digital currency on our exchange. \n"
               "\n"
               f"Crypto Name (Symbol): {result[0]}\n"
-              f"Related tags: {result[1]}\n"
-              f"CEX and DEX listed [volume %]: {result[2]}\n"
-              f"CEX listed: {result[3]}\n"
-              f"About the business: {result[10]}\n")
+              f"Related tags: {result[2]}\n"
+              f"CEX and DEX listed [volume %]: {result[3]}\n"
+              f"CEX listed: {result[4]}\n"
+              f"About the business: {result[11]}\n")
 
     genai.configure(api_key=gemeni_private_key)
     model = genai.GenerativeModel("gemini-1.5-flash")

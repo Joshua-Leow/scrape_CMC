@@ -1,7 +1,8 @@
 # config.py
 
 # Target website and headers for requests
-BASE_URL = "https://coinmarketcap.com/new"
+CMC_BASE_URL = "https://coinmarketcap.com/new"
+CG_BASE_URL = "https://www.coingecko.com/en/new-cryptocurrencies"
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 }

@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.service import Service
 
 from datetime import datetime, timedelta
 from config import MAX_ROWS
-from scraper.pages_CMC import *
+from scraper.pages_cmc import *
 import os
 
 def replace_str_index(text,index=0,replacement=''):

@@ -1,18 +1,18 @@
 from genai import *
 from google_sheets import update_google_sheet, append_empty_row_google_sheet
-from scraper.scraper import *
-from config import BASE_URL, CHROME_DRIVER_PATH
-from scraper.scraper import get_data_from_hyperlink
+from scraper.scraper_cmc import *
+from config import CMC_BASE_URL, CG_BASE_URL, CHROME_DRIVER_PATH
+from scraper.scraper_cmc import get_data_from_hyperlink
 
-if __name__ == "__main__":
-    hyperlinks_time, first_hyperlink = get_hyperlinks_time(BASE_URL) # List of tuple (hyperlinks, time)
+def main_cmc():
+    hyperlinks_time, first_hyperlink = get_hyperlinks_time(CMC_BASE_URL) # List of tuple (hyperlinks, time)
     if not hyperlinks_time:
         print("There are no new listings in Coin Market Cap")
         exit()
 
     rows_to_update=[] # List of lists to store rows to be added to Google Sheet Table
     for link_time_tuple in hyperlinks_time:
-        result = get_data_from_hyperlink(BASE_URL, link_time_tuple[0], CHROME_DRIVER_PATH)
+        result = get_data_from_hyperlink(CMC_BASE_URL, link_time_tuple[0], CHROME_DRIVER_PATH)
         result.insert(0, link_time_tuple[1])
         result.insert(-2, gen_ai(result))
         rows_to_update.append(result)
@@ -29,3 +29,9 @@ if __name__ == "__main__":
     # overwrite last_hyperlink.txt with the first_hyperlink saved
     overwrite_last_hyperlink(first_hyperlink)
 
+def main_cg():
+    hyperlinks_time, first_hyperlink = get_hyperlinks_time(CG_BASE_URL) # List of tuple (hyperlinks, time)
+
+if __name__ == "__main__":
+    # main_cmc()
+    main_cg()

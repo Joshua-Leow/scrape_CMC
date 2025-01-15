@@ -32,9 +32,9 @@ TAGS = "#__next > div.sc-f9c982a5-1.bVsWPX.global-layout-v2 > div > div.cmc-body
 TAGS_SECTION = "body > div.sc-acb6320-0.jPvGvf.modalOpened > div > div.sc-acb6320-2.kUrwGA.cmc-modal-body.has-title > div"
 
 MARKETS_TABLE = "#section-coin-markets > section > div > div.sc-40bc2850-0.fARwNm > div.sc-936354b2-2.cXaKXy > table.cmc-table"
-SHOW_ALL_MARKET_BUTTON = "#section-coin-markets > section > div > div:nth-child(1) > div > div > div > div:nth-child(1) > button:nth-child(2)"
-SHOW_CEX_BUTTON = "#section-coin-markets > section > div > div:nth-child(1) > div > div > div > div:nth-child(1) > button:nth-child(3)"
-SHOW_DEX_BUTTON = "#section-coin-markets > section > div > div:nth-child(1) > div > div > div > div:nth-child(1) > button:nth-child(4)"
+SHOW_ALL_MARKET_BUTTON = "#section-coin-markets > section > div > div > div:nth-child(1) > div > div > div > div:nth-child(1) > button:nth-child(2)"
+SHOW_CEX_BUTTON = "#section-coin-markets > section > div > div > div:nth-child(1) > div > div > div > div:nth-child(1) > button:nth-child(3)"
+SHOW_DEX_BUTTON = "#section-coin-markets > section > div > div > div:nth-child(1) > div > div > div > div:nth-child(1) > button:nth-child(4)"
 NO_DATA_TEXT = "#section-coin-markets > section > div > div.sc-40bc2850-0.fARwNm > div.sc-936354b2-2.cXaKXy > table > tbody > tr > td > div > h2"
 # enumerate from nth-child(2) onwards
 

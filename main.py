@@ -5,7 +5,7 @@ from config import BASE_URL, CHROME_DRIVER_PATH
 from scraper.scraper import get_data_from_hyperlink
 
 if __name__ == "__main__":
-    hyperlinks_time = get_hyperlinks_time(BASE_URL) # List of tuple (hyperlinks, time)
+    hyperlinks_time, first_hyperlink = get_hyperlinks_time(BASE_URL) # List of tuple (hyperlinks, time)
     if not hyperlinks_time:
         print("There are no new listings in Coin Market Cap")
         exit()
@@ -26,4 +26,6 @@ if __name__ == "__main__":
         data=rows_to_update,
         credentials_file=os.path.join(os.path.dirname(__file__), "credentials.json"),
     )
+    # overwrite last_hyperlink.txt with the first_hyperlink saved
+    overwrite_last_hyperlink(first_hyperlink)
 

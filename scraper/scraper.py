@@ -15,15 +15,7 @@ import os
 def replace_str_index(text,index=0,replacement=''):
     return f'{text[:index]}{replacement}{text[index+1:]}'
 
-def get_hyperlink(url):
-    response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
-    soup = BeautifulSoup(response.text, "html.parser")
-
-    # Select element using CSS selector
-    hyperlink = soup.select_one(FIRST_HYPERLINK)
-    return hyperlink["href"] if hyperlink else None
-
-def get_hyperlinks_time(base_url):
+def read_last_hyperlink():
     script_dir = os.path.dirname(__file__)
     rel_path = "../data/last_hyperlink.txt"
     abs_file_path = os.path.join(script_dir, rel_path)
@@ -34,53 +26,15 @@ def get_hyperlinks_time(base_url):
         with open(abs_file_path, "r") as file:
             last_hyperlink = file.read().strip()
             print(f"Current link in last_hyperlink.txt is: {last_hyperlink}")
-    except:
+    except Exception as e:
         print(f"Failed to locate last_hyperlink.txt file in path: [{abs_file_path}]")
-    # Fetch the webpage
-    response = requests.get(base_url)
-    response.raise_for_status()
-    soup = BeautifulSoup(response.text, "html.parser")
+        print(e)
+    return last_hyperlink
 
-    # Locate the table
-    table_selector = "table > tbody"
-    table = soup.select_one(table_selector)
-    if not table:
-        raise ValueError("Table not found on the webpage")
-
-    hyperlinks_time = []
-    first_hyperlink = None
-    max_rows = MAX_ROWS if last_hyperlink else 1  # Limit rows based on the file existence
-
-    for i in range(1, max_rows + 1):
-        link_selector = f"tr:nth-child({i}) > td:nth-child(3) > a"
-        link_tag = table.select_one(link_selector)
-        if not link_tag or "href" not in link_tag.attrs:
-            continue
-        hyperlink = link_tag["href"]
-        if i == 1:
-            first_hyperlink = hyperlink  # Remember the first hyperlink
-        if hyperlink == last_hyperlink:
-            break  # Stop if the hyperlink matches last_hyperlink.txt
-
-        time_selector = "tr:nth-child(1) > td:nth-child(10)"
-        time_text = table.select_one(time_selector).text
-        ini_time_for_now = datetime.now() - timedelta(minutes=i)
-        time = None
-        try:
-            num = int(time_text.split()[0])
-            if time_text[-11:] == 'minutes ago' or time_text[-10:] == 'minute ago':
-                time = ini_time_for_now - timedelta(minutes=num)
-            elif time_text[-9:] == 'hours ago' or time_text[-8:] == 'hour ago':
-                time = ini_time_for_now - timedelta(hours=num)
-            elif time_text[-8:] == 'days ago' or time_text[-7:] == 'day ago':
-                time = ini_time_for_now - timedelta(days=num)
-            time = time.strftime("%Y-%m-%d %H:%M")
-        except Exception as e:
-            print(e)
-
-        hyperlinks_time.append((hyperlink,time))
-        print(f"Row {i} hyperlink is: {hyperlink}")
-        print(f"      time is: {time}")
+def overwrite_last_hyperlink(first_hyperlink):
+    script_dir = os.path.dirname(__file__)
+    rel_path = "../data/last_hyperlink.txt"
+    abs_file_path = os.path.join(script_dir, rel_path)
 
     # Update the last_hyperlink.txt file with the first hyperlink
     if first_hyperlink:
@@ -88,7 +42,66 @@ def get_hyperlinks_time(base_url):
             file.write(first_hyperlink)
             print(f"Updated link in last_hyperlink.txt to: {first_hyperlink}")
 
-    return hyperlinks_time
+
+def get_time(table, i):
+    time_selector = "tr:nth-child(1) > td:nth-child(10)"
+    time_text = table.select_one(time_selector).text
+    ini_time_for_now = datetime.now() - timedelta(minutes=i)
+    time = None
+    try:
+        num = int(time_text.split()[0])
+        if time_text[-11:] == 'minutes ago' or time_text[-10:] == 'minute ago':
+            time = ini_time_for_now - timedelta(minutes=num)
+        elif time_text[-9:] == 'hours ago' or time_text[-8:] == 'hour ago':
+            time = ini_time_for_now - timedelta(hours=num)
+        elif time_text[-8:] == 'days ago' or time_text[-7:] == 'day ago':
+            time = ini_time_for_now - timedelta(days=num)
+        time = time.strftime("%Y-%m-%d %H:%M")
+    except Exception as e:
+        print(f"Failed to get time. time_text is: {time_text}")
+        print(e)
+    return time
+
+def get_link(table, i, last_hyperlink):
+    link_selector = f"tr:nth-child({i}) > td:nth-child(3) > a"
+    link_tag = table.select_one(link_selector)
+    hyperlink = None
+    try:
+        hyperlink = link_tag["href"]
+    except Exception as e:
+        print(f"Failed to get link tag href hyperlink. link_tag is: {link_tag}")
+        print(e)
+    if hyperlink == last_hyperlink:
+        return hyperlink  # Stop if the hyperlink matches last_hyperlink.txt
+
+    return hyperlink
+
+def get_hyperlinks_time(base_url):
+    hyperlinks_time, first_hyperlink = [], None
+    last_hyperlink = read_last_hyperlink()
+    max_rows = MAX_ROWS if last_hyperlink else 1  # Limit rows based on the file existence
+
+    # Fetch the webpage
+    response = requests.get(base_url)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, "html.parser")
+    # Locate the table
+    table_selector = "table > tbody"
+    table = soup.select_one(table_selector)
+    if not table: raise ValueError("Table not found on the webpage")
+
+    for i in range(1, max_rows + 1):
+        hyperlink = get_link(table, i, last_hyperlink)
+        time = get_time(table, i)
+        if i == 1:
+            first_hyperlink = hyperlink
+        if hyperlink == last_hyperlink:
+            break
+        hyperlinks_time.append((hyperlink,time))
+        print(f"Row {i} hyperlink is: {hyperlink}")
+        print(f"      time is: {time}")
+
+    return hyperlinks_time, first_hyperlink
 
 def get_coin_name(soup):
     try:
@@ -180,6 +193,7 @@ def get_exchange(driver, all_exchange=True):
         sorted_exchanges = sorted(list(set(exchanges)), key=extract_percentage, reverse=True)
         sorted_exchanges = ", ".join(sorted_exchanges)
         # print(f"List of sorted exchanges are: {sorted_exchanges}")
+
     except Exception as e:
         print("fail at get_exchange exception")
         print(e)
@@ -188,8 +202,8 @@ def get_exchange(driver, all_exchange=True):
 
 def get_cex_exchange(driver):
     try:
+        WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, SHOW_CEX_BUTTON))
         driver.execute_script("arguments[0].click();", driver.find_element(By.CSS_SELECTOR, SHOW_CEX_BUTTON))
-        WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, "#section-coin-markets > section > div > div:nth-child(1) > p"))
         driver.implicitly_wait(1)
         exchanges = get_exchange(driver, all_exchange=False)
     except Exception as e:
@@ -200,8 +214,8 @@ def get_cex_exchange(driver):
 
 def get_dex_exchange(driver):
     try:
+        WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, SHOW_DEX_BUTTON))
         driver.execute_script("arguments[0].click();", driver.find_element(By.CSS_SELECTOR, SHOW_DEX_BUTTON))
-        WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, "#section-coin-markets > section > div > div:nth-child(1) > p"))
         driver.implicitly_wait(1)
         exchanges = get_exchange(driver, all_exchange=False)
     except Exception as e:
@@ -282,6 +296,7 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
         driver.get(base_url[:-4] + hyperlink)
         exchange, cex_exchange, dex_exchange = "", "", ""
         try:
+            WebDriverWait(driver, 10).until(lambda x: x.find_element(By.ID, "section-coin-markets"))
             coin_markets_element = driver.find_element(By.ID, "section-coin-markets")
             driver.execute_script("arguments[0].scrollIntoView();", coin_markets_element)
             WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, MARKET_TITLE_TEXT))

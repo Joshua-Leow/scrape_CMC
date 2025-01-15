@@ -13,4 +13,4 @@ CHROME_DRIVER_PATH = "resources/chromedriver-mac-arm64/chromedriver"
 # CHROME_DRIVER_PATH = "C:\\Users\\joshl\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe"
 
 # Max rows to extract each run
-MAX_ROWS = 100
+MAX_ROWS = 10

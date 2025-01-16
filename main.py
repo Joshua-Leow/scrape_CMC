@@ -1,7 +1,8 @@
 from genai import *
 from google_sheets import update_google_sheet, append_empty_row_google_sheet
+from scraper.scraper_cg import get_hyperlinks_time_cg
 from scraper.scraper_cmc import *
-from config import CMC_BASE_URL, CG_BASE_URL, CHROME_DRIVER_PATH
+from config import CMC_BASE_URL, CHROME_DRIVER_PATH
 from scraper.scraper_cmc import get_data_from_hyperlink
 
 def main_cmc():
@@ -30,7 +31,7 @@ def main_cmc():
     overwrite_last_hyperlink(first_hyperlink)
 
 def main_cg():
-    hyperlinks_time, first_hyperlink = get_hyperlinks_time(CG_BASE_URL) # List of tuple (hyperlinks, time)
+    hyperlinks_time, first_hyperlink = get_hyperlinks_time_cg()
 
 if __name__ == "__main__":
     # main_cmc()

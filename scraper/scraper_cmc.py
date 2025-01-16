@@ -1,5 +1,6 @@
 import re
-
+import os
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import requests
 from selenium import webdriver
@@ -7,10 +8,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 
-from datetime import datetime, timedelta
 from config import MAX_ROWS
 from scraper.pages_cmc import *
-import os
 
 def replace_str_index(text,index=0,replacement=''):
     return f'{text[:index]}{replacement}{text[index+1:]}'
@@ -254,7 +253,8 @@ def get_website(soup):
 def get_x_link(soup):
     try:
         X_link = None
-        for i in range(1,4):
+        num_rows = len(soup.find_all(SOCIALS_LINKS))
+        for i in range(1,num_rows+1):
             X_TARGET = replace_str_index(SOCIALS_LINKS, -6, str(i))
             x_element = soup.select_one(X_TARGET)
             if x_element["href"]:

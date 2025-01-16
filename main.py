@@ -1,8 +1,10 @@
-from genai import *
+import os
+
+from genai import gen_ai
 from google_sheets import update_google_sheet, append_empty_row_google_sheet
-from scraper.scraper_cg import get_hyperlinks_time_cg
-from scraper.scraper_cmc import *
-from config import CMC_BASE_URL, CHROME_DRIVER_PATH
+from scraper.scraper_cg import get_hyperlinks_time_cg, get_data_from_hyperlink_cg
+from scraper.scraper_cmc import get_hyperlinks_time, overwrite_last_hyperlink
+from config import CMC_BASE_URL, CHROME_DRIVER_PATH, CG_BASE_URL, MAX_ROWS
 from scraper.scraper_cmc import get_data_from_hyperlink
 
 def main_cmc():
@@ -32,6 +34,17 @@ def main_cmc():
 
 def main_cg():
     hyperlinks_time, first_hyperlink = get_hyperlinks_time_cg()
+    if not hyperlinks_time:
+        print("There are no new listings in Coin Gecko")
+        exit()
+
+    rows_to_update=[] # List of lists to store rows to be added to Google Sheet Table
+    for link_time_tuple in hyperlinks_time:
+        result = get_data_from_hyperlink_cg(CG_BASE_URL, link_time_tuple[0], CHROME_DRIVER_PATH)
+        result.insert(0, link_time_tuple[1])
+        result.insert(-2, gen_ai(result))
+        rows_to_update.append(result)
+
 
 if __name__ == "__main__":
     # main_cmc()

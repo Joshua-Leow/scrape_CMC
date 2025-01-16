@@ -48,5 +48,5 @@ def main_cg():
 
 
 if __name__ == "__main__":
-    # main_cmc()
-    main_cg()
+    main_cmc()
+    # main_cg()

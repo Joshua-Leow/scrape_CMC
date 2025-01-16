@@ -173,16 +173,17 @@ def get_exchange(driver, all_exchange=True):
                 return None
         except: pass
 
-        WebDriverWait(driver, 10).until(lambda x: x.find_element(By.ID, "section-coin-markets"))
+        WebDriverWait(driver, 5).until(lambda x: x.find_element(By.ID, "section-coin-markets"))
         coin_markets_element = driver.find_element(By.ID, "section-coin-markets")
         driver.execute_script("arguments[0].scrollIntoView();", coin_markets_element)
-        WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, MARKET_TITLE_TEXT))
+        WebDriverWait(driver, 5).until(lambda x: x.find_element(By.CSS_SELECTOR, MARKET_TITLE_TEXT))
 
         num_rows = len(driver.find_elements(By.CSS_SELECTOR, "table.cmc-table > tbody > tr"))
         # print(f"num_rows: {num_rows}")
         exchanges = []
         for i in range(2,num_rows+1):
-            EXCHANGE_TARGET = replace_str_index(MARKET_TITLE_TEXT, 39, str(i))
+            EXCHANGE_TARGET = replace_str_index(MARKET_TITLE_TEXT, 28, ":nth-child(" + str(i) + ") ")
+            # print(f"EXCHANGE_TARGET: {EXCHANGE_TARGET}")
             exchange_element = driver.find_element(By.CSS_SELECTOR, EXCHANGE_TARGET)
             if exchange_element:
                 exchange_data = exchange_element.text
@@ -206,7 +207,7 @@ def get_exchange(driver, all_exchange=True):
 
 def get_cex_exchange(driver):
     try:
-        WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, SHOW_CEX_BUTTON))
+        WebDriverWait(driver, 5).until(lambda x: x.find_element(By.CSS_SELECTOR, SHOW_CEX_BUTTON))
         driver.execute_script("arguments[0].click();", driver.find_element(By.CSS_SELECTOR, SHOW_CEX_BUTTON))
         driver.implicitly_wait(1)
         exchanges = get_exchange(driver, all_exchange=False)
@@ -218,7 +219,7 @@ def get_cex_exchange(driver):
 
 def get_dex_exchange(driver):
     try:
-        WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, SHOW_DEX_BUTTON))
+        WebDriverWait(driver, 5).until(lambda x: x.find_element(By.CSS_SELECTOR, SHOW_DEX_BUTTON))
         driver.execute_script("arguments[0].click();", driver.find_element(By.CSS_SELECTOR, SHOW_DEX_BUTTON))
         driver.implicitly_wait(1)
         exchanges = get_exchange(driver, all_exchange=False)

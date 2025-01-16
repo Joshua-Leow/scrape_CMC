@@ -42,8 +42,9 @@ def main_cg():
     for link_time_tuple in hyperlinks_time:
         result = get_data_from_hyperlink_cg(CG_BASE_URL, link_time_tuple[0], CHROME_DRIVER_PATH)
         result.insert(0, link_time_tuple[1])
-        result.insert(-2, gen_ai(result))
+        # result.insert(-2, gen_ai(result))
         rows_to_update.append(result)
+    print(rows_to_update)
 
 
 if __name__ == "__main__":

@@ -114,7 +114,8 @@ def get_hyperlinks_time_cg():
 def get_coin_name(soup):
     try:
         coin_name_target = soup.select_one(COIN_NAME_TEXT)
-        coin_name = coin_name_target.get_text()[:-6] if coin_name_target else None
+        print(f"coin_name_target is: {coin_name_target}")
+        coin_name = coin_name_target.get_text() if coin_name_target else None
     except Exception as e:
         print(e)
         return None
@@ -128,6 +129,7 @@ def get_coin_symbol(soup):
     except Exception as e:
         print(e)
         return None
+    print(f"coin_symbol is: {coin_symbol}")
     return coin_symbol
 
 def get_mcap(soup):
@@ -141,18 +143,14 @@ def get_mcap(soup):
 
 def get_tags(soup):
     tags = ""
-    try:
-        for i in range(1,4):
-            TAG_TARGET = replace_str_index(TAGS, -6, str(i))
-            tag_target = soup.select_one(TAG_TARGET)
-            tag = tag_target.get_text() if tag_target else None
-            if tag:
-                tags = tags + ", " + tag
-        tags = tags[2:] if tags else tags
-        tags = tags+", (and more)" if soup.select_one(SHOW_ALL_TAGS_BUTTON) else tags
-    except Exception as e:
-        print(e)
-        return None
+    tags_div = soup.select_one(TAGS)
+    if tags_div:
+        a_tags = tags_div.find_all('a')
+        for a_tag in a_tags:
+            tags = tags + a_tag + ", "
+        tags = tags[:-2]
+    else:
+        print("Tags div not found.")
     return tags
 
 def get_vol_perc(driver, i, exchange_data):
@@ -256,27 +254,28 @@ def get_x_link(soup):
 def get_predicted_probability():
     return 0.50
 
-def get_important(soup):
-    try:
-        important_target = soup.select_one(IMPORTANT_TEXT)
-        important_text = important_target.get_text() if important_target else None
-    except Exception as e:
-        print(e)
-        return None
-    return important_text
+# def get_important(soup):
+#     try:
+#         important_target = soup.select_one(IMPORTANT_TEXT)
+#         important_text = important_target.get_text() if important_target else None
+#     except Exception as e:
+#         print(e)
+#         return None
+#     return important_text
 
 def get_data_from_hyperlink_cg(base_url, hyperlink, driver_path):
     # Use the Service class to specify the ChromeDriver path
     service = Service(driver_path)
     driver = webdriver.Chrome(service=service)
     try:
-        url = base_url[:-4] + hyperlink
-        driver.get(base_url[:-4] + hyperlink)
+        url = base_url + hyperlink
+        driver.get(url)
 
         # Fetch the webpage
         response = requests.get(url)
-        response.raise_for_status()
+        # response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
+        print(soup.prettify())
         print(f"  Navigated to: {url}")
 
         name = get_coin_name(soup) + " (" + get_coin_symbol(soup) + ")"
@@ -288,8 +287,7 @@ def get_data_from_hyperlink_cg(base_url, hyperlink, driver_path):
         try:
             exchange = get_exchange(driver)
         except Exception as e:
-            print("Failed to get exchange data")
-            print(e)
+            print("Failed to get exchange data\n" + e)
         driver.quit()
 
         stage = "Prospect"
@@ -300,7 +298,8 @@ def get_data_from_hyperlink_cg(base_url, hyperlink, driver_path):
         X_link = get_x_link(soup)
         notes = get_notes(soup)
         source = url
-        impt = get_important(soup)
+        impt = ""
+        # impt = get_important(soup)
 
         result = [
             name,

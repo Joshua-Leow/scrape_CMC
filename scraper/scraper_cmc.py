@@ -44,7 +44,7 @@ def overwrite_last_hyperlink(first_hyperlink):
 
 
 def get_time(table, i):
-    time_selector = "tr:nth-child(1) > td:nth-child(10)"
+    time_selector = f"tr:nth-child({i}) > td:nth-child(10)"
     time_text = table.select_one(time_selector).text
     ini_time_for_now = datetime.now() - timedelta(minutes=i)
     time = None
@@ -172,8 +172,13 @@ def get_exchange(driver, all_exchange=True):
             if driver.find_element(By.CSS_SELECTOR, NO_DATA_TEXT).is_displayed():
                 print("fail at NO_DATA_TEXT displayed")
                 return None
-        except:
-            pass
+        except: pass
+
+        WebDriverWait(driver, 10).until(lambda x: x.find_element(By.ID, "section-coin-markets"))
+        coin_markets_element = driver.find_element(By.ID, "section-coin-markets")
+        driver.execute_script("arguments[0].scrollIntoView();", coin_markets_element)
+        WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, MARKET_TITLE_TEXT))
+
         num_rows = len(driver.find_elements(By.CSS_SELECTOR, "table.cmc-table > tbody > tr"))
         # print(f"num_rows: {num_rows}")
         exchanges = []
@@ -292,21 +297,17 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
         name = get_coin_name(soup) + " (" + get_coin_symbol(soup) + ")"
         mcap = get_mcap(soup)
         tags = get_tags(soup)
-        # selenium open browser
+            # selenium open browser
         driver.get(base_url[:-4] + hyperlink)
         exchange, cex_exchange, dex_exchange = "", "", ""
         try:
-            WebDriverWait(driver, 10).until(lambda x: x.find_element(By.ID, "section-coin-markets"))
-            coin_markets_element = driver.find_element(By.ID, "section-coin-markets")
-            driver.execute_script("arguments[0].scrollIntoView();", coin_markets_element)
-            WebDriverWait(driver, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, MARKET_TITLE_TEXT))
             exchange = get_exchange(driver)
-            # dex_exchange = get_dex_exchange(driver)
             cex_exchange = get_cex_exchange(driver)
         except Exception as e:
             print("Failed to get exchange data")
             print(e)
         driver.quit()
+
         stage = "Prospect"
         est_value = 30000
         contact = "rep@example.com"

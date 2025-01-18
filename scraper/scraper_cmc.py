@@ -1,5 +1,6 @@
 import re
 import os
+import time
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import requests
@@ -167,23 +168,25 @@ def extract_percentage(item):
 
 def get_exchange(driver, all_exchange=True):
     try:
-        driver.implicitly_wait(2)
-        # TODO: NO_DATA_TEXT is displayed with "loading text" will need to fix code
+        if all_exchange:
+            WebDriverWait(driver, 5).until(lambda x: x.find_element(By.ID, "section-coin-markets"))
+            coin_markets_element = driver.find_element(By.ID, "section-coin-markets")
+            driver.execute_script("arguments[0].scrollIntoView();", coin_markets_element)
+            # WebDriverWait(driver, 5).until(lambda x: x.find_element(By.CSS_SELECTOR, MARKET_TITLE_TEXT))
+        time.sleep(2)
         try:
             if driver.find_element(By.CSS_SELECTOR, NO_DATA_TEXT).is_displayed():
-                print("fail at NO_DATA_TEXT displayed")
+                print(f"NO_DATA_TEXT.text is: {NO_DATA_TEXT.text}")
+                # if NO_DATA_TEXT.text != 'No data is available now':
+                #     WebDriverWait(driver, 1)
+                # else:
                 return None
         except: pass
-
-        WebDriverWait(driver, 5).until(lambda x: x.find_element(By.ID, "section-coin-markets"))
-        coin_markets_element = driver.find_element(By.ID, "section-coin-markets")
-        driver.execute_script("arguments[0].scrollIntoView();", coin_markets_element)
-        WebDriverWait(driver, 5).until(lambda x: x.find_element(By.CSS_SELECTOR, MARKET_TITLE_TEXT))
 
         num_rows = len(driver.find_elements(By.CSS_SELECTOR, "table.cmc-table > tbody > tr"))
         print(f"num_rows: {num_rows}")
         exchanges = []
-        for i in range(2,num_rows+1):
+        for i in range(1,num_rows+1):
             EXCHANGE_TARGET = replace_str_index(MARKET_TITLE_TEXT, 28, ":nth-child(" + str(i) + ") ")
             print(f"EXCHANGE_TARGET: {EXCHANGE_TARGET}")
             exchange_element = driver.find_element(By.CSS_SELECTOR, EXCHANGE_TARGET)

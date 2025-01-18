@@ -167,6 +167,8 @@ def extract_percentage(item):
 
 def get_exchange(driver, all_exchange=True):
     try:
+        driver.implicitly_wait(2)
+        # TODO: NO_DATA_TEXT is displayed with "loading text" will need to fix code
         try:
             if driver.find_element(By.CSS_SELECTOR, NO_DATA_TEXT).is_displayed():
                 print("fail at NO_DATA_TEXT displayed")
@@ -179,25 +181,25 @@ def get_exchange(driver, all_exchange=True):
         WebDriverWait(driver, 5).until(lambda x: x.find_element(By.CSS_SELECTOR, MARKET_TITLE_TEXT))
 
         num_rows = len(driver.find_elements(By.CSS_SELECTOR, "table.cmc-table > tbody > tr"))
-        # print(f"num_rows: {num_rows}")
+        print(f"num_rows: {num_rows}")
         exchanges = []
         for i in range(2,num_rows+1):
             EXCHANGE_TARGET = replace_str_index(MARKET_TITLE_TEXT, 28, ":nth-child(" + str(i) + ") ")
-            # print(f"EXCHANGE_TARGET: {EXCHANGE_TARGET}")
+            print(f"EXCHANGE_TARGET: {EXCHANGE_TARGET}")
             exchange_element = driver.find_element(By.CSS_SELECTOR, EXCHANGE_TARGET)
             if exchange_element:
                 exchange_data = exchange_element.text
-                # print(f"exchange data: {exchange_data}")
+                print(f"exchange data: {exchange_data}")
                 if all_exchange:
                     exchange_data, vol_perc_float = get_vol_perc(driver, i, exchange_data)
                 if exchange_data:
                     exchanges.append(exchange_data)
-                    # print(f"exchanges list: {exchanges}")
+                    print(f"exchanges list: {exchanges}")
             else:
                 break
         sorted_exchanges = sorted(list(set(exchanges)), key=extract_percentage, reverse=True)
         sorted_exchanges = ", ".join(sorted_exchanges)
-        # print(f"List of sorted exchanges are: {sorted_exchanges}")
+        print(f"List of sorted exchanges are: {sorted_exchanges}")
 
     except Exception as e:
         print("fail at get_exchange exception")
@@ -209,7 +211,6 @@ def get_cex_exchange(driver):
     try:
         WebDriverWait(driver, 5).until(lambda x: x.find_element(By.CSS_SELECTOR, SHOW_CEX_BUTTON))
         driver.execute_script("arguments[0].click();", driver.find_element(By.CSS_SELECTOR, SHOW_CEX_BUTTON))
-        driver.implicitly_wait(1)
         exchanges = get_exchange(driver, all_exchange=False)
     except Exception as e:
         print("fail at get_cex_exchange exception")
@@ -221,7 +222,6 @@ def get_dex_exchange(driver):
     try:
         WebDriverWait(driver, 5).until(lambda x: x.find_element(By.CSS_SELECTOR, SHOW_DEX_BUTTON))
         driver.execute_script("arguments[0].click();", driver.find_element(By.CSS_SELECTOR, SHOW_DEX_BUTTON))
-        driver.implicitly_wait(1)
         exchanges = get_exchange(driver, all_exchange=False)
     except Exception as e:
         print("fail at get_dex_exchange exception")

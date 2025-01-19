@@ -172,41 +172,30 @@ def get_exchange(driver, all_exchange=True):
             WebDriverWait(driver, 5).until(lambda x: x.find_element(By.ID, "section-coin-markets"))
             coin_markets_element = driver.find_element(By.ID, "section-coin-markets")
             driver.execute_script("arguments[0].scrollIntoView();", coin_markets_element)
-            # WebDriverWait(driver, 5).until(lambda x: x.find_element(By.CSS_SELECTOR, MARKET_TITLE_TEXT))
         time.sleep(2)
-        try:
-            if driver.find_element(By.CSS_SELECTOR, NO_DATA_TEXT).is_displayed():
-                print(f"NO_DATA_TEXT.text is: {NO_DATA_TEXT.text}")
-                # if NO_DATA_TEXT.text != 'No data is available now':
-                #     WebDriverWait(driver, 1)
-                # else:
-                return None
-        except: pass
 
         num_rows = len(driver.find_elements(By.CSS_SELECTOR, "table.cmc-table > tbody > tr"))
-        print(f"num_rows: {num_rows}")
+        # print(f"num_rows: {num_rows}")
         exchanges = []
         for i in range(1,num_rows+1):
             EXCHANGE_TARGET = replace_str_index(MARKET_TITLE_TEXT, 28, ":nth-child(" + str(i) + ") ")
-            print(f"EXCHANGE_TARGET: {EXCHANGE_TARGET}")
-            exchange_element = driver.find_element(By.CSS_SELECTOR, EXCHANGE_TARGET)
-            if exchange_element:
+            try:
+                exchange_element = driver.find_element(By.CSS_SELECTOR, EXCHANGE_TARGET)
                 exchange_data = exchange_element.text
-                print(f"exchange data: {exchange_data}")
                 if all_exchange:
                     exchange_data, vol_perc_float = get_vol_perc(driver, i, exchange_data)
-                if exchange_data:
-                    exchanges.append(exchange_data)
-                    print(f"exchanges list: {exchanges}")
-            else:
-                break
+                exchanges.append(exchange_data)
+                # print(f"exchanges list: {exchanges}")
+            except:
+                if driver.find_element(By.CSS_SELECTOR, NO_DATA_TEXT).is_displayed():
+                    return None
+                else: print(f"failed to locate EXCHANGE_TARGET: {EXCHANGE_TARGET}")
         sorted_exchanges = sorted(list(set(exchanges)), key=extract_percentage, reverse=True)
         sorted_exchanges = ", ".join(sorted_exchanges)
-        print(f"List of sorted exchanges are: {sorted_exchanges}")
+        # print(f"List of sorted exchanges are: {sorted_exchanges}")
 
     except Exception as e:
-        print("fail at get_exchange exception")
-        print(e)
+        print(f"fail at get_exchange exception\n{e}")
         return None
     return sorted_exchanges
 

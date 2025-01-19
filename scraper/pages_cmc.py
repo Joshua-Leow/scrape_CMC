@@ -23,7 +23,7 @@ MAX_SUPPLY_TEXT = "#section-coin-stats > div > div > dl > div:nth-child(6) > div
 CIRCULATING_SUPPLY_TEXT = "#section-coin-stats > div > div > dl > div.sc-65e7f566-0.eQBACe.CoinMetrics_group-item-full__ncOjB > div > dd > div > div:nth-child(1) > span"
 
 WEBSITE_LINK = "div.CoinInfoLinks_info-items-wrapper__dHVKe > div:nth-child(1) > div.InfoBarItem_value__au1BG > div > div > div > a"
-SOCIALS_LINKS = "div.CoinInfoLinks_info-items-wrapper__dHVKe > div:nth-child(2) > div.InfoBarItem_value__au1BG > div > div > div > div:nth-child(1) > a"
+SOCIALS_LINKS = "div.CoinInfoLinks_info-items-wrapper__dHVKe > div:nth-child(2) > div.InfoBarItem_value__au1BG > div > div > div > div > a"
 ABOUT_TEXT = "#section-coin-about > div.sc-4fc2860f-0.eyGmhU > div:nth-child(2) > section > div"
 # ABOUT_TEXT = "#section-coin-about > div.sc-4fc2860f-0.eyGmhU > div:nth-child(2) > section > div > div > div > div > div > div or span"
 SHOW_ALL_TAGS_BUTTON = "#__next > div.sc-f9c982a5-1.bVsWPX.global-layout-v2 > div > div.cmc-body-wrapper > div > div > div.sc-4c05d6ef-0.sc-da3461a8-0.dlQYLv.iwYbsh.coin-stats > div > div.sc-65e7f566-0.eGAMZw > section > div > div.sc-65e7f566-0.fFHGof.coin-tags > div.sc-65e7f566-0.eQBACe > div > span.sc-65e7f566-0.sc-9ee74f67-1.ckjyAl.izfTnl"

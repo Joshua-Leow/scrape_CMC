@@ -221,14 +221,24 @@ def get_dex_exchange(driver):
         return None
     return exchanges
 
-def get_notes(soup):
+def get_x_link(driver):
+    X_link = ""
     try:
-        about_notes_target = soup.select_one(ABOUT_TEXT)
-        about_notes = about_notes_target.get_text() if about_notes_target else None
+        # num_rows = len(driver.find_elements(By.CSS_SELECTOR, SOCIALS_LINKS))
+        # # print(f"num_rows: {num_rows}")
+        # exchanges = []
+        # for i in range(1,num_rows+1):
+        #     SOCIAL_TARGET = replace_str_index(SOCIALS_LINKS, -4, ":nth-child(" + str(i) + ") ")
+        #     try:
+        social_elements = driver.find_elements(By.CSS_SELECTOR, SOCIALS_LINKS)
+        social_links = [elem.get_attribute('href') for elem in social_elements]
+        for link in social_links:
+            if 'twitter.com' in link:
+                # print(f'x_link is: {link}')
+                return link
     except Exception as e:
-        print(e)
-        return None
-    return about_notes
+        print(f"Failed at X link function.\n{e}")
+    return X_link
 
 def get_website(soup):
     try:
@@ -243,22 +253,14 @@ def get_website(soup):
         return None
     return website
 
-def get_x_link(soup):
+def get_notes(soup):
     try:
-        X_link = None
-        num_rows = len(soup.find_all(SOCIALS_LINKS))
-        for i in range(1,num_rows+1):
-            X_TARGET = replace_str_index(SOCIALS_LINKS, -6, str(i))
-            x_element = soup.select_one(X_TARGET)
-            if x_element["href"]:
-                X_link = x_element["href"]
-                X_link = "https:" + X_link
-                if "twitter.com" in X_link:
-                    return X_link
+        about_notes_target = soup.select_one(ABOUT_TEXT)
+        about_notes = about_notes_target.get_text() if about_notes_target else None
     except Exception as e:
         print(e)
         return None
-    return X_link
+    return about_notes
 
 def get_predicted_probability():
     return 0.50
@@ -292,13 +294,16 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
         tags = get_tags(soup)
             # selenium open browser
         driver.get(base_url[:-4] + hyperlink)
-        exchange, cex_exchange, dex_exchange = "", "", ""
+        exchange, cex_exchange, X_link = "", "", ""
         try:
             exchange = get_exchange(driver)
             cex_exchange = get_cex_exchange(driver)
         except Exception as e:
-            print("Failed to get exchange data")
-            print(e)
+            print(f"Failed to get exchange data\n{e}")
+        try:
+            X_link = get_x_link(driver)
+        except Exception as e:
+            print(f"Failed to get X_link.\n{e}")
         driver.quit()
 
         stage = "Prospect"
@@ -306,7 +311,6 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
         contact = "rep@example.com"
         predicted_probability = get_predicted_probability()
         website = get_website(soup)
-        X_link = get_x_link(soup)
         notes = get_notes(soup)
         source = url
         impt = get_important(soup)

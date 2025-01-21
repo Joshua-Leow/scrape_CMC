@@ -224,20 +224,16 @@ def get_dex_exchange(driver):
 def get_x_link(driver):
     X_link = ""
     try:
-        # num_rows = len(driver.find_elements(By.CSS_SELECTOR, SOCIALS_LINKS))
-        # # print(f"num_rows: {num_rows}")
-        # exchanges = []
-        # for i in range(1,num_rows+1):
-        #     SOCIAL_TARGET = replace_str_index(SOCIALS_LINKS, -4, ":nth-child(" + str(i) + ") ")
-        #     try:
         social_elements = driver.find_elements(By.CSS_SELECTOR, SOCIALS_LINKS)
         social_links = [elem.get_attribute('href') for elem in social_elements]
         for link in social_links:
             if 'twitter.com' in link:
-                # print(f'x_link is: {link}')
-                return link
+                X_link = link
+        if len(social_links) > 0:
+            X_link = social_links[0]
     except Exception as e:
         print(f"Failed at X link function.\n{e}")
+    print(f'X_link is: {X_link}')
     return X_link
 
 def get_website(soup):

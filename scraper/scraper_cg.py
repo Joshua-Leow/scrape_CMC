@@ -164,8 +164,27 @@ def extract_percentage(item):
     match = re.search(r"\[(\d+\.?\d*)%]", item)  # Regex to extract percentage
     return float(match.group(1)) if match else -1  # Return -1 for items without percentage
 
-def get_exchange(driver, all_exchange=True):
-    pass
+def get_exchange(driver):
+    # market_table = driver.find_element(By.CSS_SELECTOR, MARKETS_TABLE)
+    # driver.execute_script("arguments[0].scrollIntoView();", market_table)
+    # try:
+    #     no_data_element = driver.find_elements(By.CSS_SELECTOR, NO_DATA_TEXT)
+    #     return None
+    # except:
+    #     pass
+    X_link = ""
+    try:
+        time.sleep(3)
+        market_rows_elements = driver.find_elements(By.CSS_SELECTOR, MARKETS_TABLE)
+        for row in market_rows_elements:
+            exchange = row.find_element(By.CSS_SELECTOR, EXCHANGE_TEXT).text
+            dex_cex = row.find_element(By.CSS_SELECTOR, DEX_CEX_TEXT).text
+            vol_perc = row.find_element(By.CSS_SELECTOR, VOL_PERC_TEXT).text
+            print(f"exchange is {exchange}\ndex_cex is {dex_cex}\nvol_perc is {vol_perc}")
+    except Exception as e:
+        print(f"Failed at X link function.\n{e}")
+    # print(f'X_link is: {X_link}')
+    return X_link
 
 def get_notes(driver):
     about_more_button = driver.find_element(By.CSS_SELECTOR, ABOUT_MORE_BUTTON)
@@ -216,7 +235,7 @@ def get_data_from_hyperlink_cg(base_url, hyperlink, driver_path):
         X_link = get_x_link(driver)
         notes = get_notes(driver)
         tags = get_tags(driver)
-        # exchange = get_exchange(driver)
+        exchange = get_exchange(driver)
     except Exception as e:
         print(f"Failed to get exchange data\n{e}")
     # selenium open browser

@@ -30,15 +30,14 @@ TAGS = "#gecko-coin-page-container > div> div > div:nth-child(9) > div:nth-child
 # Get all <a> tags from TAGS_SECTION
 # TAGS_SECTION = "body > div.sc-acb6320-0.jPvGvf.modalOpened > div > div.sc-acb6320-2.kUrwGA.cmc-modal-body.has-title > div"
 
-MARKETS_TABLE = "body > div:nth-child(4) > main > div > div:nth-child(5) > div.tw-relative.tw-w-full.tw-overflow-x-auto > div:nth-child(2) > table"
-# SHOW_ALL_MARKET_BUTTON = "#section-coin-markets > section > div > div > div:nth-child(1) > div > div > div > div:nth-child(1) > button:nth-child(2)"
-# SHOW_CEX_BUTTON = "#section-coin-markets > section > div > div > div:nth-child(1) > div > div > div > div:nth-child(1) > button:nth-child(3)"
-# SHOW_DEX_BUTTON = "#section-coin-markets > section > div > div > div:nth-child(1) > div > div > div > div:nth-child(1) > button:nth-child(4)"
-NO_DATA_TEXT = "#section-coin-markets > section > div > div.sc-40bc2850-0.fARwNm > div.sc-936354b2-2.cXaKXy > table > tbody > tr > td > div > h2"
+MARKETS_TABLE = "body > div:nth-child(4) > main > div > div:nth-child(5) > div.tw-relative.tw-w-full.tw-overflow-x-auto > div:nth-child(2) > table > tbody:nth-last-child(1) > tr"
+EXCHANGE_TEXT = "td:nth-child(2) > div > a > div"
+DEX_CEX_TEXT = "td:nth-child(3) > span > div"
+VOL_PERC_TEXT = "td:nth-child(10)"
+NO_DATA_TEXT = "body > div:nth-child(4) > main > div > div:nth-child(5) > div > div.tw-relative.tw-w-full.tw-overflow-x-auto > div.tw-h-32.tw-flex.tw-items-center.tw-justify-center > div"
 # enumerate from nth-child(2) onwards
 
 MARKET_TITLE_TEXT = "table.cmc-table > tbody > tr:nth-child(2) > td > span > a > div > div > p"
-VOL_PERC_TEXT = "table.cmc-table > tbody > tr:nth-child(2) > td:nth-child(8) > span"
 LIQUIDITY_TEXT = "table.cmc-table > tbody > tr:nth-child(2) > td:nth-child(10) > span"
 
 INFO_TABLE_KEYS = "#gecko-coin-page-container > div > div > div > div.tw-my-auto.tw-text-left.tw-text-gray-500.dark\:tw-text-moon-200.tw-font-medium.tw-text-sm.tw-leading-5"

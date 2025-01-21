@@ -26,7 +26,7 @@ SOCIALS_LINKS = "#gecko-coin-page-container > div> div > div:nth-child(4) > div 
 ABOUT_TEXT = "#about > div > div.coin-page-read-more.gecko-override-links.tw-relative"
 ABOUT_MORE_BUTTON = "#about > div > div.tw-my-4 > button"
 # SHOW_ALL_TAGS_BUTTON = "#__next > div.sc-f9c982a5-1.bVsWPX.global-layout-v2 > div > div.cmc-body-wrapper > div > div > div.sc-4c05d6ef-0.sc-da3461a8-0.dlQYLv.iwYbsh.coin-stats > div > div.sc-65e7f566-0.eGAMZw > section > div > div.sc-65e7f566-0.fFHGof.coin-tags > div.sc-65e7f566-0.eQBACe > div > span.sc-65e7f566-0.sc-9ee74f67-1.ckjyAl.izfTnl"
-TAGS = "#gecko-coin-page-container > div> div > div:nth-child(9) > div:nth-child(2)"
+TAGS = "#gecko-coin-page-container > div> div > div:nth-child(9) > div:nth-child(2) > div > a > div > div"
 # Get all <a> tags from TAGS_SECTION
 # TAGS_SECTION = "body > div.sc-acb6320-0.jPvGvf.modalOpened > div > div.sc-acb6320-2.kUrwGA.cmc-modal-body.has-title > div"
 
@@ -41,7 +41,7 @@ MARKET_TITLE_TEXT = "table.cmc-table > tbody > tr:nth-child(2) > td > span > a >
 VOL_PERC_TEXT = "table.cmc-table > tbody > tr:nth-child(2) > td:nth-child(8) > span"
 LIQUIDITY_TEXT = "table.cmc-table > tbody > tr:nth-child(2) > td:nth-child(10) > span"
 
-
+INFO_TABLE_KEYS = "#gecko-coin-page-container > div > div > div > div.tw-my-auto.tw-text-left.tw-text-gray-500.dark\:tw-text-moon-200.tw-font-medium.tw-text-sm.tw-leading-5"
 
 
 

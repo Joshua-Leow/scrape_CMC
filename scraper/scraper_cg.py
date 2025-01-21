@@ -131,19 +131,23 @@ def get_mcap(driver):
     return mcap
 
 def get_tags(driver):
-    X_link = ""
+    info_table_keys_elements = driver.find_elements(By.CSS_SELECTOR, INFO_TABLE_KEYS)
+    info_table_keys = [elem.text for elem in info_table_keys_elements]
+    for i, key in enumerate(info_table_keys):
+        if 'Categories' in key:
+            row = i
+    TAGS_TARGET = replace_str_index(TAGS, 54, str(row+1))
+    tags_str = ""
     try:
-        social_elements = driver.find_elements(By.CSS_SELECTOR, SOCIALS_LINKS)
-        social_links = [elem.get_attribute('href') for elem in social_elements]
-        for link in social_links:
-            if 'twitter.com' in link:
-                X_link = link
-        if len(social_links) > 0:
-            X_link = social_links[0]
-    except Exception as e:
-        print(f"Failed at X link function.\n{e}")
-    print(f'X_link is: {X_link}')
-    return X_link
+        tags_elements = driver.find_elements(By.CSS_SELECTOR, TAGS_TARGET)
+        tags = [elem.text for elem in tags_elements]
+        for i, tag in enumerate(tags):
+            if 'Suggest a Category' in tag:
+                tags.pop(i)
+        tags_str = ", ".join(tags)
+    except Exception as e: print(f"Failed at get_tags function.\n{e}")
+    # print(f'tags_str is: {tags_str}')
+    return tags_str
 
 def get_vol_perc(driver, i, exchange_data):
     vol_perc_float = None
@@ -211,7 +215,7 @@ def get_data_from_hyperlink_cg(base_url, hyperlink, driver_path):
         website = get_website(driver)
         X_link = get_x_link(driver)
         notes = get_notes(driver)
-        # tags = get_tags(driver)
+        tags = get_tags(driver)
         # exchange = get_exchange(driver)
     except Exception as e:
         print(f"Failed to get exchange data\n{e}")

@@ -83,7 +83,7 @@ def get_link(table, i, last_hyperlink):
         print(f"Failed to get link tag href hyperlink. link_tag is: {link_tag}")
         print(e)
     if hyperlink == last_hyperlink:
-        return hyperlink  # Stop if the hyperlink matches last_hyperlink.txt
+        return hyperlink  # Stop if the hyperlink matches last_hyperlink_cmc.txt
 
     return hyperlink
 

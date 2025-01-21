@@ -17,7 +17,7 @@ def replace_str_index(text,index=0,replacement=''):
 
 def read_last_hyperlink():
     script_dir = os.path.dirname(__file__)
-    rel_path = "../data/last_hyperlink.txt"
+    rel_path = "../data/last_hyperlink_cmc.txt"
     abs_file_path = os.path.join(script_dir, rel_path)
 
     # Read the last hyperlink if the file exists
@@ -25,22 +25,22 @@ def read_last_hyperlink():
     try:
         with open(abs_file_path, "r") as file:
             last_hyperlink = file.read().strip()
-            print(f"Current link in last_hyperlink.txt is: {last_hyperlink}")
+            print(f"Current link in last_hyperlink_cmc.txt is: {last_hyperlink}")
     except Exception as e:
-        print(f"Failed to locate last_hyperlink.txt file in path: [{abs_file_path}]")
+        print(f"Failed to locate last_hyperlink_cmc.txt file in path: [{abs_file_path}]")
         print(e)
     return last_hyperlink
 
-def overwrite_last_hyperlink(first_hyperlink):
+def overwrite_last_hyperlink(first_hyperlink, source):
     script_dir = os.path.dirname(__file__)
-    rel_path = "../data/last_hyperlink.txt"
+    rel_path = "../data/last_hyperlink_"+ str(source).lower() +".txt"
     abs_file_path = os.path.join(script_dir, rel_path)
 
-    # Update the last_hyperlink.txt file with the first hyperlink
+    # Update the last_hyperlink_cmc.txt file with the first hyperlink
     if first_hyperlink:
         with open(abs_file_path, "w") as file:
             file.write(first_hyperlink)
-            print(f"Updated link in last_hyperlink.txt to: {first_hyperlink}")
+            print(f"Updated link in last_hyperlink_cmc.txt to: {first_hyperlink}")
 
 
 def get_time(table, i):
@@ -72,7 +72,7 @@ def get_link(table, i, last_hyperlink):
         print(f"Failed to get link tag href hyperlink. link_tag is: {link_tag}")
         print(e)
     if hyperlink == last_hyperlink:
-        return hyperlink  # Stop if the hyperlink matches last_hyperlink.txt
+        return hyperlink  # Stop if the hyperlink matches last_hyperlink_cmc.txt
 
     return hyperlink
 

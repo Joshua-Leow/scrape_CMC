@@ -29,8 +29,8 @@ def main_cmc():
         data=rows_to_update,
         credentials_file=os.path.join(os.path.dirname(__file__), "credentials.json"),
     )
-    # overwrite last_hyperlink.txt with the first_hyperlink saved
-    overwrite_last_hyperlink(first_hyperlink)
+    # overwrite last_hyperlink_cmc.txt with the first_hyperlink saved
+    overwrite_last_hyperlink(first_hyperlink, "cmc")
 
 def main_cg():
     hyperlinks_time, first_hyperlink = get_hyperlinks_time_cg()
@@ -54,8 +54,13 @@ def main_cg():
         data=rows_to_update,
         credentials_file=os.path.join(os.path.dirname(__file__), "credentials.json"),
     )
-    # TODO: overwrite_last_hyperlink()
+    # overwrite last_hyperlink_cmc.txt with the first_hyperlink saved
+    overwrite_last_hyperlink(first_hyperlink, "cg")
 
 if __name__ == "__main__":
+    print("=== MAIN CMC STARTING ===")
     main_cmc()
+    print("=== MAIN CMC COMPLETE ===")
+    print("=== MAIN CG STARTING ===")
     main_cg()
+    print("=== MAIN CG COMPLETE ===")

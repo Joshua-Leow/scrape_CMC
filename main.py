@@ -11,7 +11,7 @@ def main_cmc():
     hyperlinks_time, first_hyperlink = get_hyperlinks_time(CMC_BASE_URL) # List of tuple (hyperlinks, time)
     if not hyperlinks_time:
         print("There are no new listings in Coin Market Cap")
-        exit()
+        return
 
     rows_to_update=[] # List of lists to store rows to be added to Google Sheet Table
     for link_time_tuple in hyperlinks_time:
@@ -21,11 +21,11 @@ def main_cmc():
         rows_to_update.append(result)
 
     if len(hyperlinks_time) == MAX_ROWS:
-        append_empty_row_google_sheet(sheet_name="CMC_new")
-        # pass
+        append_empty_row_google_sheet(sheet_name="New Cryptocurrencies", sheet_num=1)
     # Update Google Sheets
     update_google_sheet(
-        sheet_name="CMC_new",
+        sheet_name="New Cryptocurrencies",
+        sheet_num=1,
         data=rows_to_update,
         credentials_file=os.path.join(os.path.dirname(__file__), "credentials.json"),
     )
@@ -36,17 +36,26 @@ def main_cg():
     hyperlinks_time, first_hyperlink = get_hyperlinks_time_cg()
     if not hyperlinks_time:
         print("There are no new listings in Coin Gecko")
-        exit()
+        return
 
     rows_to_update=[] # List of lists to store rows to be added to Google Sheet Table
     for link_time_tuple in hyperlinks_time:
-        print(link_time_tuple)
         result = get_data_from_hyperlink_cg(CG_BASE_URL, link_time_tuple[0], CHROME_DRIVER_PATH)
         result.insert(0, link_time_tuple[1])
         result.insert(-2, gen_ai(result))
         rows_to_update.append(result)
 
+    if len(hyperlinks_time) == MAX_ROWS:
+        append_empty_row_google_sheet(sheet_name="New Cryptocurrencies", sheet_num=2)
+    # Update Google Sheets
+    update_google_sheet(
+        sheet_name="New Cryptocurrencies",
+        sheet_num=2,
+        data=rows_to_update,
+        credentials_file=os.path.join(os.path.dirname(__file__), "credentials.json"),
+    )
+    # TODO: overwrite_last_hyperlink()
 
 if __name__ == "__main__":
-    # main_cmc()
+    main_cmc()
     main_cg()

@@ -42,7 +42,7 @@ def read_CG_table():
     try:
         with open(abs_file_path, "r") as file:
             cg_table = file.read().strip()
-            print(f"cg_table in cg_table.txt is: {cg_table[:100]}")
+            # print(f"cg_table in cg_table.txt is: {cg_table[:100]}")
     except Exception as e:
         print(f"Failed to locate cg_table.txt file in path: [{abs_file_path}]")
         print(e)

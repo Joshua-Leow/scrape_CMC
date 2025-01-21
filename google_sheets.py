@@ -1,11 +1,12 @@
 import gspread
 from google.oauth2.service_account import Credentials
 
-def append_empty_row_google_sheet(sheet_name, credentials_file="credentials.json"):
+def append_empty_row_google_sheet(sheet_name, sheet_num, credentials_file="credentials.json"):
     """
     Adds an empty row in Google Sheet table.
 
     :param sheet_name: Name of the Google Sheet.
+    :param sheet_num: Index number of the Google Sheet.
     :param credentials_file: Path to the Google Service Account JSON file.
     """
     scopes = [
@@ -18,14 +19,14 @@ def append_empty_row_google_sheet(sheet_name, credentials_file="credentials.json
     client = gspread.authorize(creds)
 
     # Open the sheet
-    sheet1 = client.open(sheet_name).sheet1
+    sheet = client.open(sheet_name).get_worksheet(sheet_num-1)
     data = [
         "==== Reached Maximum Number of Rows to Extract. " +
         "==== Fill in Missing Rows Here.. ===="
     ]
 
     # Add 1 row to the sheet
-    sheet1.insert_row(data,2)
+    sheet.insert_row(data,2)
 
 # TODO: format cells will cause future cells inserted to also be formatted
     # # Color the background of 'A2:B2' cell range in black,
@@ -51,11 +52,12 @@ def append_empty_row_google_sheet(sheet_name, credentials_file="credentials.json
 
     print("Added row in Google Sheet table successfully.")
 
-def update_google_sheet(sheet_name, data, credentials_file="credentials.json"):
+def update_google_sheet(sheet_name, sheet_num, data, credentials_file="credentials.json"):
     """
     Updates a Google Sheet table with web scraping data.
 
     :param sheet_name: Name of the Google Sheet.
+    :param sheet_num: Index number of the Google Sheet.
     :param data: List of lists, each representing one row of data to add.
     :param credentials_file: Path to the Google Service Account JSON file.
     """
@@ -70,13 +72,12 @@ def update_google_sheet(sheet_name, data, credentials_file="credentials.json"):
     client = gspread.authorize(creds)
 
     # Open the sheet
-    sheet1 = client.open(sheet_name).sheet1
-    # sheet2 = client.open(sheet_name).get_worksheet(1)
+    sheet = client.open(sheet_name).get_worksheet(sheet_num-1)
 
     # Append rows to the sheet
     # for row in data:
     #     print(f"Inserted row {row} into Google Sheet.")
     #     sheet1.insert_row(row,2)
-    sheet1.insert_rows(data,2)
+    sheet.insert_rows(data,2)
 
     print("Google Sheet table updated successfully.")

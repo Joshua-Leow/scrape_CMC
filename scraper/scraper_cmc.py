@@ -233,7 +233,7 @@ def get_x_link(driver):
             X_link = social_links[0]
     except Exception as e:
         print(f"Failed at X link function.\n{e}")
-    print(f'X_link is: {X_link}')
+    # print(f'X_link is: {X_link}')
     return X_link
 
 def get_website(soup):

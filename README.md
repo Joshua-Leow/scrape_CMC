@@ -1,7 +1,8 @@
 # Cryptocurrency Listing Scraper
 
 ## Project Overview
-An automated web scraping tool that monitors and collects data about newly listed cryptocurrencies from CoinMarketCap (CMC) and CoinGecko (CG). The tool extracts detailed information about each listing and maintains the data in Google Sheets.
+An automated web scraping tool that monitors and collects data about newly listed cryptocurrencies from CoinMarketCap (CMC) and CoinGecko (CG). The tool extracts detailed information about each listing and maintains the data in Google Sheets.<br>
+<img src="data/google_sheets.png" alt="Google Sheets Output"/>
 
 ## Key Features
 - Real-time monitoring of new cryptocurrency listings
@@ -25,6 +26,7 @@ An automated web scraping tool that monitors and collects data about newly liste
   beautifulsoup4
   selenium
   google-auth
+  google-generativeai
   gspread
   requests
   ```
@@ -32,8 +34,8 @@ An automated web scraping tool that monitors and collects data about newly liste
 ## Installation
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/crypto-listing-scraper.git
-cd crypto-listing-scraper
+git clone https://github.com/Joshua-Leow/scrape_CMC.git
+cd scrape_CMC
 ```
 
 2. Install dependencies:
@@ -59,15 +61,20 @@ pip install -r requirements.txt
 
 ## Project Structure
 ```
-├── main.py                 # Main execution script
-├── config.py              # Configuration settings
-├── google_sheets.py       # Google Sheets integration
+├── main.py                     # Main execution script
+├── config.py                   # Configuration settings
+├── google_sheets.py            # Google Sheets integration
+├── genai.py                    # Generation AI integration
 ├── scraper/
-│   ├── scraper_cmc.py    # CoinMarketCap scraper
-│   ├── scraper_cg.py     # CoinGecko scraper
-│   └── pages/            # Page selectors and constants
-├── data/                 # Data storage
-└── credentials.json      # Google API credentials
+│   ├── scraper_cmc.py          # CoinMarketCap scraper
+│   ├── scraper_cg.py           # CoinGecko scraper
+│   ├── pages_cmc.py            # Page selectors in CoinMarketCap
+│   └── pages_cg.py             # Page selectors in CoinGecko
+├── data/                       # Data storage
+│   ├── CG_table.txt            # Copy paste HTML table from CoinGecko
+│   ├── last_hyperlink_cg.txt   # last hyperlink extracted from CoinGecko
+│   └── last_hyperlink_cmc.txt  # last hyperlink extracted from CoinMarketCap
+└── credentials.json            # Google API credentials
 ```
 
 ## Usage

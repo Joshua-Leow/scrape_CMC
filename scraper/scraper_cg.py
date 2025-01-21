@@ -242,11 +242,14 @@ def get_data_from_hyperlink_cg(base_url, hyperlink, driver_path):
     options = Options()
     options.add_argument('--disable-blink-features=AutomationControlled')
     driver = webdriver.Chrome(service=service, options=options)
+    name ,mcap, tags, exchange, cex_exchange, website, X_link, notes, source = "", "", "", "", "", "", "", "", ""
     try:
         url = base_url + hyperlink
         driver.get(url)
+        source = url
         print(f"  Navigated to: {url}")
-    except Exception as e: print(f"Failed to navigate to {base_url+hyperlink}\n{e}")
+    except Exception as e:
+        print(f"Failed to navigate to {base_url+hyperlink}\n{e}")
     try:
         name = get_coin_name(driver) + " (" + get_coin_symbol(driver) + ")"
         mcap = get_mcap(driver)
@@ -257,35 +260,30 @@ def get_data_from_hyperlink_cg(base_url, hyperlink, driver_path):
         exchange, cex_exchange = get_exchange(driver)
     except Exception as e:
         print(f"Failed to get exchange data\n{e}")
-    # selenium open browser
-    exchange, cex_exchange, dex_exchange = "", "", ""
     driver.quit()
 
     stage = "Prospect"
     est_value = 30000
     contact = "rep@example.com"
     predicted_probability = get_predicted_probability()
-    # source = url
-    # impt = ""
     # impt = get_important(soup)
 
-    result = None
-    # result = [
-    #     name,
-    #     mcap,
-    #     tags,
-    #     exchange,
-    #     # dex_exchange,
-    #     cex_exchange,
-    #     stage,
-    #     est_value,
-    #     contact,
-    #     predicted_probability,
-    #     website,
-    #     X_link,
-    #     notes,
-    #     source,
-    #     impt
-    # ]
+    result = [
+        name,
+        mcap,
+        tags,
+        exchange,
+        # dex_exchange,
+        cex_exchange,
+        stage,
+        est_value,
+        contact,
+        predicted_probability,
+        website,
+        X_link,
+        notes,
+        source,
+        # impt
+    ]
 
     return result

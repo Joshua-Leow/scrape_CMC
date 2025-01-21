@@ -164,27 +164,46 @@ def extract_percentage(item):
     match = re.search(r"\[(\d+\.?\d*)%]", item)  # Regex to extract percentage
     return float(match.group(1)) if match else -1  # Return -1 for items without percentage
 
+def deduplicate_and_sort(exchange_data):
+    highest_percentages = {}
+    for item in exchange_data:
+        match = re.search(r"(.+?) \[(\d+\.?\d*)%]", item)  # Extract exchange name and percentage
+        if match:
+            exchange_name = match.group(1).strip()
+            percentage = float(match.group(2))
+            # Keep the highest percentage for each exchange
+            if exchange_name not in highest_percentages or percentage > highest_percentages[exchange_name]:
+                highest_percentages[exchange_name] = percentage
+    # Reconstruct the list and sort it
+    sorted_exchanges = sorted(
+        [f"{name} [{percentage:.2f}%]" for name, percentage in highest_percentages.items()],
+        key=extract_percentage,
+        reverse=True
+    )
+    return sorted_exchanges
+
 def get_exchange(driver):
-    # market_table = driver.find_element(By.CSS_SELECTOR, MARKETS_TABLE)
-    # driver.execute_script("arguments[0].scrollIntoView();", market_table)
-    # try:
-    #     no_data_element = driver.find_elements(By.CSS_SELECTOR, NO_DATA_TEXT)
-    #     return None
-    # except:
-    #     pass
-    X_link = ""
+    exchanges_str, cex_exchanges_str=None,None
     try:
         time.sleep(3)
         market_rows_elements = driver.find_elements(By.CSS_SELECTOR, MARKETS_TABLE)
+        exchange_data, cex_exchange_data=[],[]
         for row in market_rows_elements:
             exchange = row.find_element(By.CSS_SELECTOR, EXCHANGE_TEXT).text
             dex_cex = row.find_element(By.CSS_SELECTOR, DEX_CEX_TEXT).text
             vol_perc = row.find_element(By.CSS_SELECTOR, VOL_PERC_TEXT).text
-            print(f"exchange is {exchange}\ndex_cex is {dex_cex}\nvol_perc is {vol_perc}")
+            # print(f"exchange is {exchange}, dex_cex is {dex_cex}, vol_perc is {vol_perc}")
+            exchange_data.append(exchange+' ['+vol_perc+']')
+            if dex_cex == 'CEX':
+                cex_exchange_data.append(exchange+' ['+vol_perc+']')
+        sorted_exchanges = deduplicate_and_sort(sorted(list(set(exchange_data)), key=extract_percentage, reverse=True))
+        sorted_cex_exchanges = deduplicate_and_sort(sorted(list(set(cex_exchange_data)), key=extract_percentage, reverse=True))
+        exchanges_str = ", ".join(sorted_exchanges)
+        cex_exchanges_str = ", ".join(sorted_cex_exchanges)
     except Exception as e:
-        print(f"Failed at X link function.\n{e}")
-    # print(f'X_link is: {X_link}')
-    return X_link
+        print(f"Failed at get_exchange function.\n{e}")
+    # print(f'exchanges_str is: {exchanges_str}\ncex_exchanges_str is: {cex_exchanges_str}')
+    return exchanges_str, cex_exchanges_str
 
 def get_notes(driver):
     about_more_button = driver.find_element(By.CSS_SELECTOR, ABOUT_MORE_BUTTON)
@@ -235,7 +254,7 @@ def get_data_from_hyperlink_cg(base_url, hyperlink, driver_path):
         X_link = get_x_link(driver)
         notes = get_notes(driver)
         tags = get_tags(driver)
-        exchange = get_exchange(driver)
+        exchange, cex_exchange = get_exchange(driver)
     except Exception as e:
         print(f"Failed to get exchange data\n{e}")
     # selenium open browser

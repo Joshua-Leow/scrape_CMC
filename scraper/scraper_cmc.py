@@ -1,6 +1,7 @@
 import re
 import os
 import time
+from typing import List, Tuple, Optional
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import requests
@@ -76,7 +77,22 @@ def get_link(table, i, last_hyperlink):
 
     return hyperlink
 
-def get_hyperlinks_time(base_url):
+def get_hyperlinks_time_cmc(base_url: str) -> Tuple[List[Tuple[str, str]], Optional[str]]:
+    """
+    Retrieves new cryptocurrency listing URLs and their timestamps.
+
+    Args:
+        base_url (str): Base URL of the cryptocurrency listing platform
+
+    Returns:
+        Tuple containing:
+        - List of tuples (hyperlink, timestamp)
+        - First hyperlink found (for progress tracking)
+
+    Raises:
+        requests.exceptions.RequestException: For network-related errors
+        ValueError: If required elements aren't found
+    """
     hyperlinks_time, first_hyperlink = [], None
     last_hyperlink = read_last_hyperlink()
     max_rows = MAX_ROWS if last_hyperlink else 1  # Limit rows based on the file existence
@@ -271,7 +287,24 @@ def get_important(soup):
     return important_text
 
 
-def get_data_from_hyperlink(base_url, hyperlink, driver_path):
+def get_data_from_hyperlink(base_url: str, hyperlink: str, driver_path: str) -> List[str]:
+    """
+    Extracts detailed information about a cryptocurrency from its listing page.
+
+    Args:
+        base_url (str): Base URL of the cryptocurrency platform
+        hyperlink (str): Specific URL path for the cryptocurrency
+        driver_path (str): Path to ChromeDriver executable
+
+    Returns:
+        List containing extracted data in the following order:
+        [name, market_cap, tags, exchanges, cex_exchanges, stage, value,
+         contact, probability, website, social_link, description, source]
+
+    Raises:
+        selenium.common.exceptions.WebDriverException: For browser automation errors
+        ValueError: If required data cannot be extracted
+    """
     # Use the Service class to specify the ChromeDriver path
     service = Service(driver_path)
     driver = webdriver.Chrome(service=service)
@@ -288,20 +321,12 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
         name = get_coin_name(soup) + " (" + get_coin_symbol(soup) + ")"
         mcap = get_mcap(soup)
         tags = get_tags(soup)
-            # selenium open browser
+        # selenium open browser
         driver.get(base_url[:-4] + hyperlink)
-        exchange, cex_exchange, X_link = "", "", ""
-        try:
-            exchange = get_exchange(driver)
-            cex_exchange = get_cex_exchange(driver)
-        except Exception as e:
-            print(f"Failed to get exchange data\n{e}")
-        try:
-            X_link = get_x_link(driver)
-        except Exception as e:
-            print(f"Failed to get X_link.\n{e}")
-        driver.quit()
-
+        exchange = get_exchange(driver)
+        cex_exchange = get_cex_exchange(driver)
+        X_link = get_x_link(driver)
+        # end of selenium
         stage = "Prospect"
         est_value = 30000
         contact = "rep@example.com"
@@ -316,7 +341,6 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
             mcap,
             tags,
             exchange,
-            # dex_exchange,
             cex_exchange,
             stage,
             est_value,
@@ -329,6 +353,9 @@ def get_data_from_hyperlink(base_url, hyperlink, driver_path):
             impt
         ]
     finally:
-        pass
+        driver.quit()
 
     return result
+
+
+

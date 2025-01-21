@@ -1,6 +1,7 @@
 import re
 import os
 import time
+from typing import List, Tuple, Optional
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import requests
@@ -87,7 +88,19 @@ def get_link(table, i, last_hyperlink):
 
     return hyperlink
 
-def get_hyperlinks_time_cg():
+def get_hyperlinks_time_cg() -> Tuple[List[Tuple[str, str]], Optional[str]]:
+    """
+    Retrieves new cryptocurrency listing URLs and their timestamps.
+
+    Returns:
+        Tuple containing:
+        - List of tuples (hyperlink, timestamp)
+        - First hyperlink found (for progress tracking)
+
+    Raises:
+        requests.exceptions.RequestException: For network-related errors
+        ValueError: If required elements aren't found
+    """
     hyperlinks_time, first_hyperlink = [], None
     CG_table = read_CG_table()
     last_hyperlink = read_last_hyperlink_cg()
@@ -237,7 +250,24 @@ def get_x_link(driver):
 def get_predicted_probability():
     return 0.50
 
-def get_data_from_hyperlink_cg(base_url, hyperlink, driver_path):
+def get_data_from_hyperlink_cg(base_url: str, hyperlink: str, driver_path: str) -> List[str]:
+    """
+    Extracts detailed information about a cryptocurrency from its listing page.
+
+    Args:
+        base_url (str): Base URL of the cryptocurrency platform
+        hyperlink (str): Specific URL path for the cryptocurrency
+        driver_path (str): Path to ChromeDriver executable
+
+    Returns:
+        List containing extracted data in the following order:
+        [name, market_cap, tags, exchanges, cex_exchanges, stage, value,
+         contact, probability, website, social_link, description, source]
+
+    Raises:
+        selenium.common.exceptions.WebDriverException: For browser automation errors
+        ValueError: If required data cannot be extracted
+    """
     service = Service(driver_path)
     options = Options()
     options.add_argument('--disable-blink-features=AutomationControlled')
@@ -258,32 +288,30 @@ def get_data_from_hyperlink_cg(base_url, hyperlink, driver_path):
         notes = get_notes(driver)
         tags = get_tags(driver)
         exchange, cex_exchange = get_exchange(driver)
-    except Exception as e:
-        print(f"Failed to get exchange data\n{e}")
-    driver.quit()
+        stage = "Prospect"
+        est_value = 30000
+        contact = "rep@example.com"
+        predicted_probability = get_predicted_probability()
+        # impt = get_important(soup)
 
-    stage = "Prospect"
-    est_value = 30000
-    contact = "rep@example.com"
-    predicted_probability = get_predicted_probability()
-    # impt = get_important(soup)
-
-    result = [
-        name,
-        mcap,
-        tags,
-        exchange,
-        # dex_exchange,
-        cex_exchange,
-        stage,
-        est_value,
-        contact,
-        predicted_probability,
-        website,
-        X_link,
-        notes,
-        source,
-        # impt
-    ]
+        result = [
+            name,
+            mcap,
+            tags,
+            exchange,
+            cex_exchange,
+            stage,
+            est_value,
+            contact,
+            predicted_probability,
+            website,
+            X_link,
+            notes,
+            source,
+            ""
+            # impt
+        ]
+    finally:
+        driver.quit()
 
     return result

@@ -105,6 +105,7 @@ def get_hyperlinks_time_cg() -> Tuple[List[Tuple[str, str]], Optional[str]]:
     CG_table = read_CG_table()
     last_hyperlink = read_last_hyperlink_cg()
     max_rows = MAX_ROWS if last_hyperlink else 1  # Limit rows based on the file existence
+    if max_rows > 50: max_rows = 50
 
     # Fetch the webpage
     soup = BeautifulSoup(CG_table, "html.parser")
@@ -127,19 +128,31 @@ def get_hyperlinks_time_cg() -> Tuple[List[Tuple[str, str]], Optional[str]]:
     return hyperlinks_time, first_hyperlink
 
 def get_coin_name(driver):
-    coin_name = driver.find_element(By.CSS_SELECTOR, COIN_NAME_TEXT).text
+    coin_name = ""
+    try:
+        coin_name = driver.find_element(By.CSS_SELECTOR, COIN_NAME_TEXT).text
+    except Exception as e:
+        print(f"Failed at get_coin_name function. COIN_NAME_TEXT not found.")
     # print(f"coin_name is: {coin_name}")
     return coin_name
 
 def get_coin_symbol(driver):
-    coin_symbol = driver.find_element(By.CSS_SELECTOR, COIN_SYMBOL_TEXT).text
-    if coin_symbol[-6:] == ' Price':
-        coin_symbol = coin_symbol[:-6]
+    coin_symbol = ""
+    try:
+        coin_symbol = driver.find_element(By.CSS_SELECTOR, COIN_SYMBOL_TEXT).text
+        if coin_symbol[-6:] == ' Price':
+            coin_symbol = coin_symbol[:-6]
+    except Exception as e:
+        print(f"Failed at get_coin_symbol function. COIN_SYMBOL_TEXT not found.")
     # print(f"coin_symbol is: {coin_symbol}")
     return coin_symbol
 
 def get_mcap(driver):
-    mcap = driver.find_element(By.CSS_SELECTOR, MARKET_CAP_TEXT).text
+    mcap = ""
+    try:
+        mcap = driver.find_element(By.CSS_SELECTOR, MARKET_CAP_TEXT).text
+    except Exception as e:
+        print(f"Failed at get_mcap function. MARKET_CAP_TEXT not found.")
     # print(f"mcap is: {mcap}")
     return mcap
 
@@ -161,17 +174,6 @@ def get_tags(driver):
     except Exception as e: print(f"Failed at get_tags function.\n{e}")
     # print(f'tags_str is: {tags_str}')
     return tags_str
-
-def get_vol_perc(driver, i, exchange_data):
-    vol_perc_float = None
-    VOL_PERC_TARGET = replace_str_index(VOL_PERC_TEXT, 39, str(i))
-    vol_perc_text = driver.find_element(By.CSS_SELECTOR, VOL_PERC_TARGET).text
-    # print(f"vol_perc_text is: {vol_perc_text}")
-    if vol_perc_text != '--%':
-        if vol_perc_text == '<0.01%':
-            vol_perc_text = "0.01"
-        exchange_data = exchange_data + "[" + vol_perc_text + "]"
-    return exchange_data, vol_perc_float
 
 def extract_percentage(item):
     match = re.search(r"\[(\d+\.?\d*)%]", item)  # Regex to extract percentage
@@ -227,8 +229,12 @@ def get_notes(driver):
     return about_text
 
 def get_website(driver):
-    website = driver.find_element(By.CSS_SELECTOR, WEBSITE_LINK)
-    website = website.get_attribute('href')
+    try:
+        website = driver.find_element(By.CSS_SELECTOR, WEBSITE_LINK)
+        website = website.get_attribute('href')
+    except Exception as e:
+        print(f"Failed to get website\n{e}")
+        return None
     # print(f"website is: {website}")
     return website
 

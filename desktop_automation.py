@@ -1,19 +1,24 @@
+from certifi import contents
 from pynput.keyboard import Controller, Key
 import time
 
+from setuptools.command.saveopts import saveopts
+
 keyboard = Controller()
 
-# alt tab
+# Open Mac spotlight search
 keyboard.press(Key.cmd)
 keyboard.press(Key.space)
-keyboard.release(Key.tab)
+keyboard.release(Key.cmd)
 keyboard.release(Key.space)
+time.sleep(1)
 
 # go to chrome
 keyboard.type("chrome")
-time.sleep(1)  # Give time to switch to the application
+time.sleep(2)
 keyboard.press(Key.enter)
 keyboard.release(Key.enter)
+time.sleep(1)
 
 # open new tab
 keyboard.press(Key.cmd)
@@ -52,3 +57,15 @@ keyboard.release(Key.cmd)
 keyboard.press(Key.cmd)
 keyboard.type("c")
 keyboard.release(Key.cmd)
+
+# ctrl + w to close tab
+keyboard.press(Key.cmd)
+keyboard.type("w")
+keyboard.release(Key.cmd)
+
+# search for finder
+# cmd shift G go to CG_table.txt
+# cmd o to open in TextEdit
+# ctrl a and paste contents
+# ctrl s to save
+# ctrl w to close

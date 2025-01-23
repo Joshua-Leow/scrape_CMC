@@ -109,13 +109,16 @@ keyboard.press(Key.enter)
 keyboard.release(Key.enter)
 time.sleep(1)
 
-# tab to select first item, cmd o to open in TextEdit
+# tab to select first item
 keyboard.press(Key.tab)
 keyboard.release(Key.tab)
 time.sleep(1)
+
+# ctrl o to open in TextEdit
 keyboard.press(Key.cmd)
 keyboard.type("o")
 keyboard.release(Key.cmd)
+time.sleep(1)
 
 # ctrl a to select all
 keyboard.press(Key.cmd)

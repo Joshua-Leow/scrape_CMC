@@ -256,6 +256,14 @@ def get_x_link(driver):
 def get_predicted_probability():
     return 0.50
 
+def get_important(driver):
+    impt = ""
+    try:
+        impt = driver.find_element(By.CSS_SELECTOR, IMPORTANT_TEXT).text
+    except: pass
+    # print(f"impt is: {impt}")
+    return impt
+
 def get_data_from_hyperlink_cg(base_url: str, hyperlink: str, driver_path: str) -> List[str]:
     """
     Extracts detailed information about a cryptocurrency from its listing page.
@@ -298,7 +306,7 @@ def get_data_from_hyperlink_cg(base_url: str, hyperlink: str, driver_path: str) 
         est_value = 30000
         contact = "rep@example.com"
         predicted_probability = get_predicted_probability()
-        # impt = get_important(soup)
+        impt = get_important(driver)
 
         result = [
             name,
@@ -314,8 +322,7 @@ def get_data_from_hyperlink_cg(base_url: str, hyperlink: str, driver_path: str) 
             X_link,
             notes,
             source,
-            ""
-            # impt
+            impt
         ]
     finally:
         driver.quit()

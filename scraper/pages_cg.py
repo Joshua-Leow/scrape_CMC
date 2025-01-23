@@ -11,7 +11,7 @@ FIRST_HYPERLINK = "#__next > div.sc-f9c982a5-1.bVsWPX.global-layout-v2 > div > d
 COIN_NAME_TEXT = "#gecko-coin-page-container > div > div > div > div > h1 > div"
 COIN_SYMBOL_TEXT = "#gecko-coin-page-container > div > div > div > div > h1 > span"
 
-# IMPORTANT_TEXT = "#__next > div.sc-f9c982a5-1.bVsWPX.global-layout-v2 > div > div.cmc-body-wrapper > div > div > div.sc-65e7f566-0.ljtNVi.notice-container > section > div > div > span"
+IMPORTANT_TEXT = "#gecko-coin-page-container > div > div.gecko-override-links-primary > div > div > div.tw-ml-3 > div"
 
 MARKET_CAP_TEXT = "#gecko-coin-page-container > div > div:nth-child(2) > table > tbody > tr:nth-child(1) > td"
 # TWENTYFOUR_HR_VOL_TEXT = "#section-coin-stats > div > div > dl > div:nth-child(2) > div > dd > div > div.CoinMetrics_overflow-content__tlFu7 > div > span"

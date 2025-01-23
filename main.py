@@ -5,6 +5,7 @@ and updates Google Sheets with the collected data.
 """
 import os
 
+from desktop_automation import get_coingecko_table
 from genai import gen_ai
 from google_sheets import update_google_sheet, append_empty_row_google_sheet
 from scraper.scraper_cg import get_hyperlinks_time_cg, get_data_from_hyperlink_cg
@@ -102,5 +103,6 @@ if __name__ == "__main__":
     main_cmc()
     print("=== MAIN CMC COMPLETE ===")
     print("=== MAIN CG STARTING ===")
+    get_coingecko_table()
     main_cg()
     print("=== MAIN CG COMPLETE ===")

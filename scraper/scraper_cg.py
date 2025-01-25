@@ -157,14 +157,14 @@ def get_mcap(driver):
     return mcap
 
 def get_tags(driver):
-    info_table_keys_elements = driver.find_elements(By.CSS_SELECTOR, INFO_TABLE_KEYS)
-    info_table_keys = [elem.text for elem in info_table_keys_elements]
-    for i, key in enumerate(info_table_keys):
-        if 'Categories' in key:
-            row = i
-    TAGS_TARGET = replace_str_index(TAGS, 54, str(row+1))
     tags_str = ""
     try:
+        info_table_keys_elements = driver.find_elements(By.CSS_SELECTOR, INFO_TABLE_KEYS)
+        info_table_keys = [elem.text for elem in info_table_keys_elements]
+        for i, key in enumerate(info_table_keys):
+            if 'Categories' in key:
+                row = i
+        TAGS_TARGET = replace_str_index(TAGS, 54, str(row+1))
         tags_elements = driver.find_elements(By.CSS_SELECTOR, TAGS_TARGET)
         tags = [elem.text for elem in tags_elements]
         for i, tag in enumerate(tags):
@@ -215,8 +215,7 @@ def get_exchange(driver):
         sorted_cex_exchanges = deduplicate_and_sort(sorted(list(set(cex_exchange_data)), key=extract_percentage, reverse=True))
         exchanges_str = ", ".join(sorted_exchanges)
         cex_exchanges_str = ", ".join(sorted_cex_exchanges)
-    except Exception as e:
-        print(f"Failed at get_exchange function.\n{e}")
+    except Exception as e: print(f"Failed at get_exchange function.\n{e}")
     # print(f'exchanges_str is: {exchanges_str}\ncex_exchanges_str is: {cex_exchanges_str}')
     return exchanges_str, cex_exchanges_str
 
@@ -229,12 +228,17 @@ def get_notes(driver):
     return about_text
 
 def get_website(driver):
+    website = ""
     try:
-        website = driver.find_element(By.CSS_SELECTOR, WEBSITE_LINK)
+        info_table_keys_elements = driver.find_elements(By.CSS_SELECTOR, INFO_TABLE_KEYS)
+        info_table_keys = [elem.text for elem in info_table_keys_elements]
+        for i, key in enumerate(info_table_keys):
+            if 'Website' in key:
+                row = i
+        WEBSITE_LINK_TARGET = replace_str_index(WEBSITE_LINK, -12, str(row+1))
+        website = driver.find_element(By.CSS_SELECTOR, WEBSITE_LINK_TARGET)
         website = website.get_attribute('href')
-    except Exception as e:
-        print(f"Failed to get website\n{e}")
-        return None
+    except Exception as e: print(f"Failed to get website\n{e}")
     # print(f"website is: {website}")
     return website
 

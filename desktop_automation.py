@@ -54,16 +54,19 @@ def get_coingecko_table():
     keyboard.press(Key.cmd)
     keyboard.type("a")
     keyboard.release(Key.cmd)
+    time.sleep(1)
 
     # ctrl + c to select all
     keyboard.press(Key.cmd)
     keyboard.type("c")
     keyboard.release(Key.cmd)
+    time.sleep(1)
 
     # ctrl + w to close tab
     keyboard.press(Key.cmd)
     keyboard.type("w")
     keyboard.release(Key.cmd)
+    time.sleep(1)
 
     # Open Mac spotlight search
     keyboard.press(Key.cmd)
@@ -138,8 +141,8 @@ def get_coingecko_table():
     keyboard.release(Key.cmd)
     time.sleep(1)
 
-    # ctrl w to close
+    # ctrl w to close TextEdit
     keyboard.press(Key.cmd)
     keyboard.type("w")
     keyboard.release(Key.cmd)
-    time.sleep(1)
+    time.sleep(2)
